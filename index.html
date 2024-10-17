@@ -122,7 +122,7 @@
 <body>
 
     <header>
-        <img src="img\main icon.png" alt="레시피 아이콘" class="icon">
+        <img src="img/main_icon.png" alt="레시피 아이콘" class="icon">
         <h1>레시피 알려주는 웹</h1>
         <div class="user-actions" id="user-actions">
             <!-- 여기에 로그인 또는 마이페이지 버튼이 동적으로 표시됩니다 -->
@@ -153,21 +153,27 @@
             return localStorage.getItem('isLoggedIn') === 'true';
         }
 
-        window.onload = function() {
+        function login() {
+            localStorage.setItem('isLoggedIn', 'true');
+            updateUserActions();
+        }
+
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            updateUserActions();
+        }
+
+        function updateUserActions() {
             const userActions = document.getElementById('user-actions');
             if (checkLoginStatus()) {
-                userActions.innerHTML = '<a href="mypage.html">마이페이지</a>';
+                userActions.innerHTML = '<a href="mypage.html">마이페이지</a><a href="#" onclick="logout()">로그아웃</a>';
             } else {
                 userActions.innerHTML = '<a href="login.html">로그인</a>';
             }
         }
 
-        function login() {
-            localStorage.setItem('isLoggedIn', 'true');
-        }
-
-        function logout() {
-            localStorage.removeItem('isLoggedIn');
+        window.onload = function() {
+            updateUserActions();
         }
     </script>
 </body>
