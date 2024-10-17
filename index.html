@@ -4,48 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>기본 웹 페이지</title>
+    <title>레시피 알려주는 웹</title>
     <style>
-        /* 전체적인 스타일 리셋 */
         * {
             margin: 0;
             padding: 0;
-            box-sizing: border-box; 
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f0fdf4; /* 라이트 크림 배경 */
             color: #333;
             line-height: 1.6;
             margin: 0;
             padding: 0;
         }
 
-        /* 기본 컨테이너 */
         .container {
             width: 80%;
             margin: 0 auto;
             padding: 20px;
         }
 
-        /* 헤더 스타일 */
         header {
-            background-color: #333;
+            background-color: #a5d6a7; /* 민트색 헤더 */
             color: #fff;
             padding: 20px 0;
             text-align: center;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         header h1 {
             font-size: 2.5rem;
+            margin-left: 10px;
         }
 
-        /* 네비게이션 스타일 */
+        .icon {
+            width: 50px;
+            height: 50px;
+        }
+
+        .user-actions {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .user-actions a {
+            background-color: #ffe0b2; /* 피치색 버튼 */
+            color: #333;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .user-actions a:hover {
+            background-color: #ffcc80; /* 피치색 호버 효과 */
+        }
+
         nav {
             display: flex;
             justify-content: center;
-            background-color: #444;
+            background-color: #81c784; /* 민트색 네비게이션 */
             padding: 10px 0;
         }
 
@@ -57,79 +83,92 @@
         }
 
         nav a:hover {
-            background-color: #555;
+            background-color: #66bb6a; /* 진한 민트 호버 효과 */
             transition: background-color 0.3s ease;
         }
 
-        /* 메인 콘텐츠 스타일 */
         main {
             margin: 50px 0;
         }
 
         h2 {
-            color: #333;
+            color: #4e342e; /* 진한 갈색 부제목 */
             margin-bottom: 30px;
         }
 
         p {
             margin-bottom: 15px;
+            color: #5d4037; /* 본문 짙은 갈색 */
         }
 
-        /* 푸터 스타일 */
         footer {
-            background-color: #333;
+            background-color: #8d6e63; /* 초콜릿 갈색 푸터 */
             color: white;
             text-align: center;
             padding: 10px 0;
             margin-top: 20px;
         }
+
+        footer a {
+            color: #ffcc80; /* 푸터 링크 피치색 */
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: #ffe0b2; /* 밝은 피치색 호버 효과 */
+        }
     </style>
 </head>
 <body>
 
-    <!-- 헤더 섹션 -->
     <header>
+        <img src="img\main icon.png" alt="레시피 아이콘" class="icon">
         <h1>레시피 알려주는 웹</h1>
+        <div class="user-actions" id="user-actions">
+            <!-- 여기에 로그인 또는 마이페이지 버튼이 동적으로 표시됩니다 -->
+        </div>
     </header>
 
-    <!-- 네비게이션 -->
-    <nav>
-        <a href="asdf.html">Home</a>
-        <a href="#">About</a>
-        <a href="#">Services</a>
-        <a href="#">Contact</a>
-        <a href="#">마이페이지</a>
+    <nav aria-label="Main Navigation">
+        <a href="asdf.html" aria-label="Home">Home</a>
+        <a href="#" aria-label="About">About</a>
+        <a href="#" aria-label="Services">Services</a>
+        <a href="#" aria-label="Contact">Contact</a>
     </nav>
 
-    <!-- 메인 콘텐츠 -->
     <div class="container">
         <main>
             <h2>환영합니다!</h2>
             <p>이 웹 페이지는 HTML과 CSS로 만든 기본적인 웹 페이지 템플릿입니다. 이 템플릿을 통해 간단한 웹사이트를 만들 수 있습니다.</p>
-            <p>필요한 정보를 여기에서 제공하고, 추가 스타일을 적용하여 웹사이트를 꾸밀 수 있습니다.</p>
-            <p>이 웹 페이지는 HTML과 CSS로 만든 기본적인 웹 페이지 템플릿입니다. 이 템플릿을 통해 간단한 웹사이트를 만들 수 있습니다.</p>
-            <p>필요한 정보를 여기에서 제공하고, 추가 스타일을 적용하여 웹사이트를 꾸밀 수 있습니다.</p>
-            <p>이 웹 페이지는 HTML과 CSS로 만든 기본적인 웹 페이지 템플릿입니다. 이 템플릿을 통해 간단한 웹사이트를 만들 수 있습니다.</p>
-            <p>필요한 정보를 여기에서 제공하고, 추가 스타일을 적용하여 웹사이트를 꾸밀 수 있습니다.</p>
-            <p>이 웹 페이지는 HTML과 CSS로 만든 기본적인 웹 페이지 템플릿입니다. 이 템플릿을 통해 간단한 웹사이트를 만들 수 있습니다.</p>
-            <p>필요한 정보를 여기에서 제공하고, 추가 스타일을 적용하여 웹사이트를 꾸밀 수 있습니다.</p>
-            <p>이 웹 페이지는 HTML과 CSS로 만든 기본적인 웹 페이지 템플릿입니다. 이 템플릿을 통해 간단한 웹사이트를 만들 수 있습니다.</p>
-            <p>필요한 정보를 여기에서 제공하고, 추가 스타일을 적용하여 웹사이트를 꾸밀 수 있습니다.</p>
-            <p>이 웹 페이지는 HTML과 CSS로 만든 기본적인 웹 페이지 템플릿입니다. 이 템플릿을 통해 간단한 웹사이트를 만들 수 있습니다.</p>
-            <p>필요한 정보를 여기에서 제공하고, 추가 스타일을 적용하여 웹사이트를 꾸밀 수 있습니다.</p>
-            <p>이 웹 페이지는 HTML과 CSS로 만든 기본적인 웹 페이지 템플릿입니다. 이 템플릿을 통해 간단한 웹사이트를 만들 수 있습니다.</p>
-            <p>필요한 정보를 여기에서 제공하고, 추가 스타일을 적용하여 웹사이트를 꾸밀 수 있습니다.</p>
-            <p>이 웹 페이지는 HTML과 CSS로 만든 기본적인 웹 페이지 템플릿입니다. 이 템플릿을 통해 간단한 웹사이트를 만들 수 있습니다.</p>
-            <p>필요한 정보를 여기에서 제공하고, 추가 스타일을 적용하여 웹사이트를 꾸밀 수 있습니다.</p>
-
+            <p>필요한 정보를 제공하고, 추가 스타일을 적용하여 웹사이트를 꾸밀 수 있습니다.</p>
         </main>
     </div>
 
-    <!-- 푸터 -->
     <footer>
-        <p><a href="login.html">로그인</a></p>
-        <p>&copy; 2024 기본 웹 페이지</p>
+        <p>&copy; 2024 레시피 알려주는 웹</p>
     </footer>
 
+    <script>
+        function checkLoginStatus() {
+            return localStorage.getItem('isLoggedIn') === 'true';
+        }
+
+        window.onload = function() {
+            const userActions = document.getElementById('user-actions');
+            if (checkLoginStatus()) {
+                userActions.innerHTML = '<a href="mypage.html">마이페이지</a>';
+            } else {
+                userActions.innerHTML = '<a href="login.html">로그인</a>';
+            }
+        }
+
+        function login() {
+            localStorage.setItem('isLoggedIn', 'true');
+        }
+
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+        }
+    </script>
 </body>
 </html>
