@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>마이페이지</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box; 
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fffbe7;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #ff9800;
+            color: #fff;
+            padding: 30px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #f57c00;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #e65100;
+        }
+
+        .profile {
+            margin: 50px 0;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .profile img {
+            width: 100px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #d84315;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #d84315;
+            padding-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 10px;
+            color: #4e342e;
+            font-size: 1.1rem;
+        }
+
+        .logout-btn {
+            display: inline-block;
+            background-color: #e65100;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+
+        .logout-btn:hover {
+            background-color: #d84315;
+            transform: scale(1.05);
+        }
+
+        footer {
+            background-color: #6d4c41;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 20px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        footer p {
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            nav a {
+                padding: 8px 10px;
+                margin: 0 5px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>마이페이지</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="#">Services</a>
+        <a href="#">Contact</a>
+        <a href="mypage.html">마이페이지</a>
+        <a href="#">내 주문 내역</a>
+        <a href="#">설정</a>
+    </nav>
+
+    <div class="container">
+        <div class="profile">
+            <img src="profile.jpg" alt="프로필 사진">
+            <h2>사용자 정보</h2>
+            <p>이름: 홍길동</p>
+            <p>이메일: hong@example.com</p>
+            <p>가입일: 2024-01-01</p>
+            <p>전화번호: 010-1234-5678</p>
+            <p>주소: 서울특별시 예시구 예시동 123-45</p>
+
+            <a href="#" class="logout-btn" id="logout-btn">로그아웃</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 레시피 알려주는 웹</p>
+    </footer>
+
+    <script>
+        document.getElementById('logout-btn').onclick = function(event) {
+            event.preventDefault(); // 기본 동작 방지
+            if (confirm('정말 로그아웃 하시겠습니까?')) {
+                localStorage.removeItem('isLoggedIn');
+                window.location.href = 'index.html';
+            }
+        };
+    </script>
+
+</body>
+</html>
