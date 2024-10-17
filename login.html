@@ -58,6 +58,8 @@
                 success: function (authObj) {
                     console.log(authObj);
                     alert('Kakao 로그인 성공!');
+                    // 로그인 성공 시 메인 페이지로 이동
+                    window.location.href = 'index.html'; // 메인 페이지로 이동
                 },
                 fail: function (err) {
                     console.error(err);
@@ -86,7 +88,9 @@
                     return;
                 }
                 console.log("User email: " + email);
-                // 로그인 성공 후 처리 로직 추가
+                alert('Naver 로그인 성공!');
+                // 로그인 성공 시 메인 페이지로 이동
+                window.location.href = 'index.html'; // 메인 페이지로 이동
             } else {
                 console.log("네이버 로그인 실패");
             }
