@@ -50,50 +50,21 @@
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
     <script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js"></script>
     <script>
-        // 카카오 SDK 초기화
-        Kakao.init('d293a2647952f3e6cdd6091fe8f4d575'); // 여기에 자신의 카카오 앱 키를 입력하세요.
+        // Kakao SDK 초기화
+        Kakao.init('d293a2647952f3e6cdd6091fe8f4d575'); // 여기에 Kakao API에서 발급받은 JavaScript 키를 넣으세요
 
-        function loginWithKakao() {
+        function kakaoLogin() {
             Kakao.Auth.login({
-                success: function(authObj) {
-                    console.log('로그인 성공:', authObj);
-                    getUserInfo(); // 로그인 성공 후 사용자 정보 가져오기
+                success: function (authObj) {
+                    console.log(authObj);
+                    alert('Kakao 로그인 성공!');
                 },
-                fail: function(err) {
-                    console.error('로그인 실패:', err);
+                fail: function (err) {
+                    console.error(err);
+                    alert('Kakao 로그인 실패');
                 }
             });
         }
-
-        function getUserInfo() {
-            Kakao.API.request({
-                url: '/v2/user/me',
-                success: function(res) {
-                    console.log('사용자 정보:', res);
-                    // 여기서 res에 담긴 사용자 정보를 사용하여 처리할 수 있습니다.
-                    document.getElementById('user-info').innerHTML = `
-                        <h2>환영합니다, ${res.kakao_account.profile.nickname}님!</h2>
-                        <img src="${res.kakao_account.profile.profile_image}" alt="프로필 이미지">
-                    `;
-                },
-                fail: function(err) {
-                    console.error('사용자 정보 요청 실패:', err);
-                }
-            });
-        }
-
-        function logout() {
-            Kakao.Auth.logout(function() {
-                console.log('로그아웃 성공');
-                document.getElementById('user-info').innerHTML = ''; // 사용자 정보 초기화
-            });
-        }
-
-        window.onload = function() {
-            // 페이지 로드 시, 로그인 버튼 클릭 시 loginWithKakao 호출
-            document.getElementById('kakao-login-btn').onclick = loginWithKakao;
-            document.getElementById('kakao-logout-btn').onclick = logout;
-        };
 
         // Naver 로그인 초기화
         var naverLogin = new naver.LoginWithNaverId({
@@ -115,9 +86,7 @@
                     return;
                 }
                 console.log("User email: " + email);
-                alert('Naver 로그인 성공!');
-                // 로그인 성공 시 메인 페이지로 이동
-                window.location.href = 'index.html'; // 메인 페이지로 이동
+                // 로그인 성공 후 처리 로직 추가
             } else {
                 console.log("네이버 로그인 실패");
             }
