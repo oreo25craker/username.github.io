@@ -178,17 +178,19 @@
             if (confirm('정말 로그아웃 하시겠습니까?')) {
                 logout(); // 로그아웃 함수 호출
             }
-            function logout() {
-                Kakao.Auth.logout(function() {
-                    console.log('로그아웃 성공');
-                    document.getElementById('user-info').innerHTML = ''; // 사용자 정보 초기화
-                    alert('로그아웃 성공!'); // 로그아웃 성공 메시지 출력
-                    // 로그아웃 후 로컬 스토리지에서 로그인 정보 제거
-                    localStorage.removeItem('isLoggedIn');
-                    // 메인 페이지로 리다이렉트
-                    window.location.href = 'index.html';
-                });
-            }
+        };
+
+        function logout() {
+            Kakao.Auth.logout(function() {
+                console.log('로그아웃 성공');
+                document.getElementById('user-info').innerHTML = ''; // 사용자 정보 초기화
+                alert('로그아웃 성공!'); // 로그아웃 성공 메시지 출력
+                // 로그아웃 후 로컬 스토리지에서 로그인 정보 제거
+                localStorage.removeItem('isLoggedIn');
+                // 메인 페이지로 리다이렉트
+                window.location.href = 'index.html';
+            });
+        }
     </script>
 
 </body>
