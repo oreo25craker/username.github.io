@@ -176,6 +176,7 @@
         document.getElementById('logout-btn').onclick = function(event) {
             event.preventDefault(); // 기본 동작 방지
             if (confirm('정말 로그아웃 하시겠습니까?')) {
+                logout();
                 localStorage.removeItem('isLoggedIn');
                 window.location.href = 'index.html';
             }
