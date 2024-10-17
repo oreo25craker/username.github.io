@@ -47,70 +47,26 @@
             text-decoration: underline;
         }
     </style>
-    <!-- 카카오, 네이버 SDK -->
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
     <script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js"></script>
-</head>
-<body>
-
-    <div class="login-container">
-        <h2>Login</h2>
-        <!-- 카카오 로그인 버튼 -->
-        <button id="kakao-login-btn">
-            <img src="img/Kakaologin.png" alt="Kakao 로그인">
-        </button>
-        <!-- 네이버 로그인 버튼 -->
-        <button id="naver-login-btn">
-            <img src="img/Naverlogin.png" alt="Naver 로그인">
-        </button>
-    </div>
-
-    <!-- 로그인 후 사용자 정보 표시할 영역 -->
-    <div id="user-info"></div>
-
     <script>
-        // 카카오 SDK 초기화
-        Kakao.init('d293a2647952f3e6cdd6091fe8f4d575'); // 카카오 앱 키 입력
+        // Kakao SDK 초기화
+        Kakao.init('d293a2647952f3e6cdd6091fe8f4d575'); // 여기에 Kakao API에서 발급받은 JavaScript 키를 넣으세요
 
-        function loginWithKakao() {
+        function kakaoLogin() {
             Kakao.Auth.login({
-                success: function(authObj) {
-                    console.log('카카오 로그인 성공:', authObj);
-                    getUserInfo(); // 로그인 성공 후 사용자 정보 가져오기
+                success: function (authObj) {
+                    console.log(authObj);
+                    alert('Kakao 로그인 성공!');
                 },
-                fail: function(err) {
-                    console.error('카카오 로그인 실패:', err);
+                fail: function (err) {
+                    console.error(err);
+                    alert('Kakao 로그인 실패');
                 }
             });
         }
 
-        function getUserInfo() {
-            Kakao.API.request({
-                url: '/v2/user/me',
-                success: function(res) {
-                    console.log('카카오 사용자 정보:', res);
-                    // 사용자 정보를 화면에 표시
-                    document.getElementById('user-info').innerHTML = `
-                        <h2>환영합니다, ${res.kakao_account.profile.nickname}님!</h2>
-                        <img src="${res.kakao_account.profile.profile_image}" alt="프로필 이미지">
-                    `;
-                    // 로그인 성공 후 메인 페이지로 이동
-                    window.location.href = 'index.html';
-                },
-                fail: function(err) {
-                    console.error('카카오 사용자 정보 요청 실패:', err);
-                }
-            });
-        }
-
-        function logout() {
-            Kakao.Auth.logout(function() {
-                console.log('카카오 로그아웃 성공');
-                document.getElementById('user-info').innerHTML = ''; // 사용자 정보 초기화
-            });
-        }
-
-        // 네이버 로그인 초기화
+        // Naver 로그인 초기화
         var naverLogin = new naver.LoginWithNaverId({
             clientId: "2vRNRv4oSfBlZvEq_6O2", // 네이버에서 발급받은 Client ID
             callbackUrl: "https://oreo25craker.github.io/username.github.io/", // 콜백 URL
@@ -124,28 +80,30 @@
         naverLogin.getLoginStatus(function(status) {
             if (status) {
                 var email = naverLogin.user.getEmail();
-                if (email == undefined || email == null) {
-                    alert("이메일은 필수 정보입니다. 정보 제공에 동의해주세요.");
+                if(email == undefined || email == null) {
+                    alert("이메일은 필수 정보입니다. 정보 제공을 동의해주세요.");
                     naverLogin.reprompt();
                     return;
                 }
-                console.log("네이버 사용자 이메일: " + email);
-                alert('Naver 로그인 성공!');
-                // 로그인 성공 후 메인 페이지로 이동
-                window.location.href = 'mypage.html';
+                console.log("User email: " + email);
+                // 로그인 성공 후 처리 로직 추가
             } else {
                 console.log("네이버 로그인 실패");
             }
         });
-
-        // 페이지 로드 후 로그인 버튼 이벤트 설정
-        window.onload = function() {
-            document.getElementById('kakao-login-btn').onclick = loginWithKakao;
-            document.getElementById('naver-login-btn').onclick = function() {
-                naverLogin.login();
-            };
-        };
     </script>
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>Login</h2>
+        <button onclick="kakaoLogin()">
+            <img src="img/Kakaologin.png" alt="Kakao 로그인">
+        </button>
+        <button onclick="naverLogin.login();">
+            <img src="img/Naverlogin.png" alt="Naver 로그인">
+        </button>
+    </div>
 
 </body>
 </html>
