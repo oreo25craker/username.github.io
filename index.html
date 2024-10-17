@@ -122,7 +122,7 @@
 <body>
 
     <header>
-        <img src="img/main_icon.png" alt="레시피 아이콘" class="icon">
+        <img src="img\main icon.png" alt="레시피 아이콘" class="icon">
         <h1>레시피 알려주는 웹</h1>
         <div class="user-actions" id="user-actions">
             <!-- 여기에 로그인 또는 마이페이지 버튼이 동적으로 표시됩니다 -->
@@ -149,50 +149,26 @@
     </footer>
 
     <script>
-        // 카카오 SDK 초기화
-        Kakao.init('YOUR_APP_KEY'); // 여기에 자신의 카카오 앱 키를 입력하세요.
-
-        function loginWithKakao() {
-            Kakao.Auth.login({
-                success: function(authObj) {
-                    console.log('로그인 성공:', authObj);
-                    getUserInfo(); // 로그인 성공 후 사용자 정보 가져오기
-                },
-                fail: function(err) {
-                    console.error('로그인 실패:', err);
-                }
-            });
-        }
-
-        function getUserInfo() {
-            Kakao.API.request({
-                url: '/v2/user/me',
-                success: function(res) {
-                    console.log('사용자 정보:', res);
-                    // 여기서 res에 담긴 사용자 정보를 사용하여 처리할 수 있습니다.
-                    document.getElementById('user-info').innerHTML = `
-                        <h2>환영합니다, ${res.kakao_account.profile.nickname}님!</h2>
-                        <img src="${res.kakao_account.profile.profile_image}" alt="프로필 이미지">
-                    `;
-                },
-                fail: function(err) {
-                    console.error('사용자 정보 요청 실패:', err);
-                }
-            });
-        }
-
-        function logout() {
-            Kakao.Auth.logout(function() {
-                console.log('로그아웃 성공');
-                document.getElementById('user-info').innerHTML = ''; // 사용자 정보 초기화
-            });
+        function checkLoginStatus() {
+            return localStorage.getItem('isLoggedIn') === 'true';
         }
 
         window.onload = function() {
-            // 페이지 로드 시, 로그인 버튼 클릭 시 loginWithKakao 호출
-            document.getElementById('kakao-login-btn').onclick = loginWithKakao;
-            document.getElementById('kakao-logout-btn').onclick = logout;
-        };
+            const userActions = document.getElementById('user-actions');
+            if (checkLoginStatus()) {
+                userActions.innerHTML = '<a href="mypage.html">마이페이지</a>';
+            } else {
+                userActions.innerHTML = '<a href="login.html">로그인</a>';
+            }
+        }
+
+        function login() {
+            localStorage.setItem('isLoggedIn', 'true');
+        }
+
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+        }
     </script>
 </body>
 </html>
