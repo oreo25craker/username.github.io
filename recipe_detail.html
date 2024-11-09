@@ -107,10 +107,17 @@
                     RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
                     RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A",
                     RCP_PARTS_DTLS: row.querySelector("RCP_PARTS_DTLS")?.textContent || "N/A",
-                    MANUAL01: row.querySelector("MANUAL01")?.textContent || "N/A",
-                    MANUAL02: row.querySelector("MANUAL02")?.textContent || "N/A",
-                    MANUAL_IMG01: row.querySelector("MANUAL_IMG01")?.textContent || "",
+                    steps: []
                 };
+
+                // 조리 단계(MANUAL01 ~ MANUAL20)와 이미지(MANUAL_IMG01 ~ MANUAL_IMG20)를 동적으로 추가
+                for (let i = 1; i <= 20; i++) {
+                    const stepText = row.querySelector(`MANUAL${String(i).padStart(2, '0')}`)?.textContent;
+                    const stepImg = row.querySelector(`MANUAL_IMG${String(i).padStart(2, '0')}`)?.textContent;
+                    if (stepText) {
+                        recipe.steps.push({ text: stepText, img: stepImg });
+                    }
+                }
 
                 displayRecipeDetail(recipe);
             } catch (error) {
@@ -128,10 +135,25 @@
                 <div class="recipe-title">${recipe.RCP_NM}</div>
                 <div class="recipe-info"><strong>조리방법:</strong> ${recipe.RCP_WAY2}</div>
                 <div class="recipe-info"><strong>재료:</strong> ${recipe.RCP_PARTS_DTLS}</div>
-                <div class="recipe-info"><strong>1단계:</strong> ${recipe.MANUAL01}</div>
-                <div class="recipe-info"><strong>2단계:</strong> ${recipe.MANUAL02}</div>
-                ${recipe.MANUAL_IMG01 ? `<img src="${recipe.MANUAL_IMG01}" alt="조리 이미지" style="width:100%; margin-top: 20px;">` : ""}
             `;
+
+            // 각 조리 단계 출력
+            recipe.steps.forEach((step, index) => {
+                const stepDiv = document.createElement('div');
+                stepDiv.classList.add('recipe-info');
+                stepDiv.innerHTML = `<strong>${index + 1}단계:</strong> ${step.text}`;
+
+                if (step.img) {
+                    const img = document.createElement('img');
+                    img.src = step.img;
+                    img.alt = `${index + 1}단계 이미지`;
+                    img.style.width = "100%";
+                    img.style.marginTop = "10px";
+                    stepDiv.appendChild(img);
+                }
+
+                recipeDetail.appendChild(stepDiv);
+            });
         }
 
         // 페이지 로드 시 레시피 상세 정보 가져오기
