@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>레시피 목록</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fffbe7;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #d84315;
+            margin-bottom: 20px;
+        }
+
+        .recipe-list {
+            width: 80%;
+            max-width: 600px;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .recipe {
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+        }
+
+        .recipe:last-child {
+            border-bottom: none;
+        }
+
+        .recipe-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #f57c00;
+        }
+
+        .recipe-description {
+            margin: 10px 0;
+            color: #666;
+        }
+
+        .recipe-ingredients,
+        .recipe-instructions {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: #4e342e;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>레시피 목록</h1>
+    <div class="recipe-list" id="recipe-list">
+        <!-- 레시피 목록이 여기에 표시됩니다 -->
+    </div>
+
+    <script>
+        // 예시 사용자 ID (로그인된 사용자 ID 사용)
+        const userId = 1; // 실제 로그인된 사용자의 ID로 설정 필요
+
+        // 레시피 목록 가져오기
+        function fetchRecipes() {
+            fetch(`http://localhost:3000/getRecipes/${userId}`)
+                .then(response => response.json())
+                .then(data => displayRecipes(data))
+                .catch(error => console.error('레시피 가져오기 실패:', error));
+        }
+
+        // 레시피 목록을 화면에 표시하는 함수
+        function displayRecipes(recipes) {
+            const recipeList = document.getElementById('recipe-list');
+            recipeList.innerHTML = ''; // 기존 목록 초기화
+
+            if (recipes.length === 0) {
+                recipeList.innerHTML = '<p>등록된 레시피가 없습니다.</p>';
+                return;
+            }
+
+            recipes.forEach(recipe => {
+                const recipeDiv = document.createElement('div');
+                recipeDiv.classList.add('recipe');
+
+                recipeDiv.innerHTML = `
+                    <div class="recipe-title">${recipe.title}</div>
+                    <div class="recipe-description">${recipe.description}</div>
+                    <div class="recipe-ingredients"><strong>재료:</strong> ${recipe.ingredients}</div>
+                    <div class="recipe-instructions"><strong>조리 방법:</strong> ${recipe.instructions}</div>
+                `;
+
+                recipeList.appendChild(recipeDiv);
+            });
+        }
+
+        // 페이지 로드 시 레시피 목록 가져오기
+        window.onload = fetchRecipes;
+    </script>
+
+</body>
+</html>
