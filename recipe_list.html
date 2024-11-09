@@ -62,18 +62,19 @@
     <script>
         // API에서 레시피 목록 가져오기
         function fetchRecipes() {
-            const apiKey = "cbe2a668f4ef4e189a82";
-            const serviceId = "serviceId"; // 실제 서비스 ID로 변경
-            const dataType = "json"; // 데이터 형식 (json 또는 xml)
+            const apiKey = "cbe2a668f4ef4e189a82"; // 개인 API 키
+            const serviceId = "조리식품의 레시피 DB"; // 조리식품의 레시피 DB 서비스 ID (예시)
+            const dataType = "json"; // 응답 데이터 형식
             const startIdx = 1; // 시작 인덱스
             const endIdx = 10; // 종료 인덱스
 
-            const apiUrl = `http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/${dataType}/${startIdx}/${endIdx}`;
+            const apiUrl = `http://openapi.foodsafetykorea.go.kr/api/cbe2a668f4ef4e189a82/조리식품의 레시피 DB/json/1/10`;
 
             fetch(apiUrl)
                 .then(response => response.json())
                 .then(data => {
-                    const recipes = data.response.body.items;
+                    console.log("API 응답 데이터:", data); // 응답 데이터 구조 확인용
+                    const recipes = data.COOKRCP01.row; // 데이터 구조에 맞게 수정
                     displayRecipes(recipes);
                 })
                 .catch(error => console.error('레시피 가져오기 실패:', error));
