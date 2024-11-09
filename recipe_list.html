@@ -27,13 +27,13 @@
 
             try {
                 const apiKey = "cbe2a668f4ef4e189a82"; // 개인 API 키
-                const serviceId = "조리식품의 레시피 DB"; // 조리식품의 레시피 DB 서비스 ID
+                const serviceId = "COOKRCP01"; // 조리식품의 레시피 DB 서비스 ID
                 const startIdx = 1;
                 const endIdx = 10;
 
                 // CORS 우회를 위한 프록시 서버 사용
                 const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-                const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/cbe2a668f4ef4e189a82/조리식품의 레시피 DB/xml/1/10`;
+                const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/${startIdx}/${endIdx}`;
 
                 const response = await fetch(apiUrl);
                 if (!response.ok) {
@@ -89,5 +89,6 @@
         // 페이지 로드 시 레시피 목록 가져오기
         window.onload = fetchRecipes;
     </script>
+
 </body>
 </html>
