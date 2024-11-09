@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>마이페이지</title>
     <style>
+        /* 스타일 정의는 동일합니다 */
         * {
             margin: 0;
             padding: 0;
@@ -138,6 +139,45 @@
             }
         }
     </style>
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+    <script>
+        // Kakao SDK 초기화
+        Kakao.init('d293a2647952f3e6cdd6091fe8f4d575'); // 여기에 Kakao API에서 발급받은 JavaScript 키를 넣으세요
+
+        // 사용자 정보 가져오기
+        function getUserInfo() {
+            Kakao.API.request({
+                url: '/v2/user/me',
+                success: function(res) {
+                    console.log('사용자 정보:', res);
+                    // 사용자 정보 출력
+                    document.getElementById('user-name').textContent = res.kakao_account.profile.nickname;
+                    document.getElementById('user-email').textContent = res.kakao_account.email;
+                    document.getElementById('user-join-date').textContent = new Date().toISOString().split('T')[0]; // 예시 가입일
+                    document.getElementById('user-phone').textContent = "전화번호 미제공"; // 전화번호 제공 시 API에서 수정 가능
+                    document.getElementById('user-address').textContent = "주소 미제공"; // 주소 정보 제공 시 수정 가능
+                    document.getElementById('profile-image').src = res.kakao_account.profile.profile_image_url;
+                },
+                fail: function(err) {
+                    console.error('사용자 정보 요청 실패:', err);
+                }
+            });
+        }
+
+        // 로그아웃 함수
+        function logout() {
+            Kakao.Auth.logout(function() {
+                console.log('로그아웃 성공');
+                alert('로그아웃 성공!');
+                window.location.href = 'index.html'; // 로그아웃 후 메인 페이지로 이동
+            });
+        }
+
+        // 페이지 로드 시 사용자 정보 가져오기
+        window.onload = function() {
+            getUserInfo();
+        };
+    </script>
 </head>
 <body>
 
@@ -156,42 +196,20 @@
 
     <div class="container">
         <div class="profile">
-            <img src="profile.jpg" alt="프로필 사진">
+            <img id="profile-image" src="profile.jpg" alt="프로필 사진">
             <h2>사용자 정보</h2>
-            <p>이름: 홍길동</p>
-            <p>이메일: hong@example.com</p>
-            <p>가입일: 2024-01-01</p>
-            <p>전화번호: 010-1234-5678</p>
-            <p>주소: 서울특별시 예시구 예시동 123-45</p>
-
-            <a href="#" class="logout-btn" id="logout-btn">로그아웃</a>
+            <p>이름: <span id="user-name">홍길동</span></p>
+            <p>이메일: <span id="user-email">hong@example.com</span></p>
+            <p>가입일: <span id="user-join-date">2024-01-01</span></p>
+            <p>전화번호: <span id="user-phone">010-1234-5678</span></p>
+            <p>주소: <span id="user-address">서울특별시 예시구 예시동 123-45</span></p>
+            <a href="#" class="logout-btn" onclick="logout()">로그아웃</a>
         </div>
     </div>
 
     <footer>
         <p>&copy; 2024 레시피 알려주는 웹</p>
     </footer>
-
-    <script>
-        document.getElementById('logout-btn').onclick = function(event) {
-            event.preventDefault(); // 기본 동작 방지
-            if (confirm('정말 로그아웃 하시겠습니까?')) {
-                logout(); // 로그아웃 함수 호출
-            }
-        };
-
-        function logout() {
-            Kakao.Auth.logout(function() {
-                console.log('로그아웃 성공');
-                document.getElementById('user-info').innerHTML = ''; // 사용자 정보 초기화
-                alert('로그아웃 성공!'); // 로그아웃 성공 메시지 출력
-                // 로그아웃 후 로컬 스토리지에서 로그인 정보 제거
-                localStorage.removeItem('isLoggedIn');
-                // 메인 페이지로 리다이렉트
-                window.location.href = 'index.html';
-            });
-        }
-    </script>
 
 </body>
 </html>
