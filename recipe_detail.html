@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>레시피 상세 정보</title>
     <style>
-        /* 기본 스타일 설정 */
         body {
             font-family: Arial, sans-serif;
             background-color: #fffbe7;
@@ -24,17 +23,44 @@
             border-radius: 10px;
             margin-top: 20px;
         }
+
+        h1 {
+            color: #d84315;
+        }
+
+        .recipe-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #f57c00;
+            margin-bottom: 10px;
+        }
+
+        .recipe-info {
+            margin-bottom: 20px;
+        }
+
+        .loading, .error {
+            font-size: 1.1rem;
+            color: #888;
+            margin: 20px 0;
+        }
+
+        .error {
+            color: red;
+        }
     </style>
 </head>
 <body>
 
     <h1>레시피 상세 정보</h1>
+    <div id="loading" class="loading">레시피를 불러오는 중...</div>
+    <div id="error" class="error"></div>
     <div class="recipe-detail" id="recipe-detail">
         <!-- 레시피 상세 정보가 여기에 표시됩니다 -->
     </div>
 
     <script>
-        // URL에서 RCP_SEQ 값을 추출
+        // URL에서 RCP_SEQ 값을 추출하는 함수
         function getRecipeIdFromUrl() {
             const params = new URLSearchParams(window.location.search);
             return params.get("RCP_SEQ");
@@ -44,10 +70,73 @@
         async function fetchRecipeDetail() {
             const recipeId = getRecipeIdFromUrl();
             if (!recipeId) {
-                document.getElementById('recipe-detail').innerHTML = '<p>레시피 ID가 제공되지 않았습니다.</p>';
+                document.getElementById('error').textContent = '레시피 ID가 제공되지 않았습니다.';
                 return;
             }
 
-            const apiKey = "cbe2a668f4ef4e189a82";
-            const serviceId = "COOKRCP01";
+            const apiKey = "cbe2a668f4ef4e189a82"; // 개인 API 키
+            const serviceId = "COOKRCP01"; // 조리식품의 레시피 DB 서비스 ID
             const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+            const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/1/1/RCP_SEQ=${recipeId}`;
+
+            try {
+                const loadingElement = document.getElementById('loading');
+                const errorElement = document.getElementById('error');
+                loadingElement.style.display = 'block';
+                errorElement.textContent = '';
+
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.text();
+                console.log("API 응답 데이터:", data); // XML 데이터 확인용
+
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data, "application/xml");
+
+                const row = xmlDoc.querySelector("row");
+                if (!row) {
+                    errorElement.textContent = '해당 레시피 정보를 찾을 수 없습니다.';
+                    return;
+                }
+
+                const recipe = {
+                    RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
+                    RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
+                    RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A",
+                    RCP_PARTS_DTLS: row.querySelector("RCP_PARTS_DTLS")?.textContent || "N/A",
+                    MANUAL01: row.querySelector("MANUAL01")?.textContent || "N/A",
+                    MANUAL02: row.querySelector("MANUAL02")?.textContent || "N/A",
+                    MANUAL_IMG01: row.querySelector("MANUAL_IMG01")?.textContent || "",
+                };
+
+                displayRecipeDetail(recipe);
+            } catch (error) {
+                console.error('레시피 가져오기 실패:', error);
+                document.getElementById('error').textContent = `레시피를 불러오는데 실패했습니다: ${error.message}`;
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // 레시피 상세 정보를 화면에 표시하는 함수
+        function displayRecipeDetail(recipe) {
+            const recipeDetail = document.getElementById('recipe-detail');
+            recipeDetail.innerHTML = `
+                <div class="recipe-title">${recipe.RCP_NM}</div>
+                <div class="recipe-info"><strong>조리방법:</strong> ${recipe.RCP_WAY2}</div>
+                <div class="recipe-info"><strong>재료:</strong> ${recipe.RCP_PARTS_DTLS}</div>
+                <div class="recipe-info"><strong>1단계:</strong> ${recipe.MANUAL01}</div>
+                <div class="recipe-info"><strong>2단계:</strong> ${recipe.MANUAL02}</div>
+                ${recipe.MANUAL_IMG01 ? `<img src="${recipe.MANUAL_IMG01}" alt="조리 이미지" style="width:100%; margin-top: 20px;">` : ""}
+            `;
+        }
+
+        // 페이지 로드 시 레시피 상세 정보 가져오기
+        window.onload = fetchRecipeDetail;
+    </script>
+
+</body>
+</html>
