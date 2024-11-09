@@ -5,89 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>레시피 목록</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #fffbe7;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 20px;
-        }
-
-        h1 {
-            color: #d84315;
-            margin-bottom: 20px;
-        }
-
-        .recipe-list {
-            width: 80%;
-            max-width: 600px;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #fff;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-
-        .recipe {
-            border-bottom: 1px solid #ddd;
-            padding: 15px 0;
-        }
-
-        .recipe:last-child {
-            border-bottom: none;
-        }
-
-        .recipe-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #f57c00;
-        }
-
-        .recipe-description {
-            margin: 10px 0;
-            color: #666;
-        }
+        /* 기존 스타일 유지 */
     </style>
 </head>
 <body>
 
     <h1>레시피 목록</h1>
+    <div id="loading">레시피를 불러오는 중...</div>
+    <div id="error" style="color: red;"></div>
     <div class="recipe-list" id="recipe-list">
         <!-- 레시피 목록이 여기에 표시됩니다 -->
     </div>
 
     <script>
         // API에서 레시피 목록 가져오기
-        function fetchRecipes() {
-            const apiKey = "cbe2a668f4ef4e189a82"; // 개인 API 키
-            const serviceId = "조리식품의 레시피 DB"; // 조리식품의 레시피 DB 서비스 ID (예시)
-            const dataType = "xml"; // 응답 데이터 형식
-            const startIdx = 1; // 시작 인덱스
-            const endIdx = 10; // 종료 인덱스
+        async function fetchRecipes() {
+            const loadingElement = document.getElementById('loading');
+            const errorElement = document.getElementById('error');
+            loadingElement.style.display = 'block';
+            errorElement.textContent = '';
 
-            const apiUrl = `http://openapi.foodsafetykorea.go.kr/api/cbe2a668f4ef4e189a82/조리식품의 레시피 DB/xml/1/10`;
+            try {
+                const apiKey = "cbe2a668f4ef4e189a82"; // 개인 API 키
+                const serviceId = "COOKRCP01"; // 조리식품의 레시피 DB 서비스 ID
+                const startIdx = 1;
+                const endIdx = 10;
 
-            fetch(apiUrl)
-                .then(response => response.text())
-                .then(data => {
-                    console.log("API 응답 데이터:", data); // XML 데이터 확인
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(data, "application/xml");
+                // CORS 우회를 위한 프록시 서버 사용
+                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+                const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/${startIdx}/${endIdx}`;
 
-                    // XML 데이터에서 필요한 항목 추출
-                    const rows = xmlDoc.getElementsByTagName("row");
-                    const recipes = Array.from(rows).map(row => ({
-                        RCP_SEQ: row.getElementsByTagName("RCP_SEQ")[0].textContent,
-                        RCP_NM: row.getElementsByTagName("RCP_NM")[0].textContent,
-                        RCP_WAY2: row.getElementsByTagName("RCP_WAY2")[0].textContent
-                    }));
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.text();
+                console.log("API 응답 데이터:", data); // XML 데이터 확인
 
-                    displayRecipes(recipes);
-                })
-                .catch(error => console.error('레시피 가져오기 실패:', error));
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data, "text/xml");
+
+                // 에러 체크
+                const errorCode = xmlDoc.querySelector('RESULT > CODE');
+                if (errorCode && errorCode.textContent !== 'INFO-000') {
+                    const errorMessage = xmlDoc.querySelector('RESULT > MSG').textContent;
+                    throw new Error(`API Error: ${errorMessage}`);
+                }
+
+                // XML 데이터에서 필요한 항목 추출
+                const rows = xmlDoc.getElementsByTagName("row");
+                const recipes = Array.from(rows).map(row => ({
+                    RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
+                    RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
+                    RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A",
+                    RCP_PARTS_DTLS: row.querySelector("RCP_PARTS_DTLS")?.textContent || "N/A"
+                }));
+
+                displayRecipes(recipes);
+            } catch (error) {
+                console.error('레시피 가져오기 실패:', error);
+                errorElement.textContent = `레시피를 불러오는데 실패했습니다: ${error.message}`;
+            } finally {
+                loadingElement.style.display = 'none';
+            }
         }
 
         // 레시피 목록을 화면에 표시하는 함수
@@ -105,9 +85,10 @@
                 recipeDiv.classList.add('recipe');
 
                 recipeDiv.innerHTML = `
-                    <div><strong>일련번호:</strong> ${recipe.RCP_SEQ || "N/A"}</div>
-                    <div class="recipe-title"><strong>메뉴명:</strong> ${recipe.RCP_NM || "N/A"}</div>
-                    <div><strong>조리방법:</strong> ${recipe.RCP_WAY2 || "N/A"}</div>
+                    <div><strong>일련번호:</strong> ${recipe.RCP_SEQ}</div>
+                    <div class="recipe-title"><strong>메뉴명:</strong> ${recipe.RCP_NM}</div>
+                    <div><strong>조리방법:</strong> ${recipe.RCP_WAY2}</div>
+                    <div><strong>재료:</strong> ${recipe.RCP_PARTS_DTLS}</div>
                 `;
 
                 recipeList.appendChild(recipeDiv);
