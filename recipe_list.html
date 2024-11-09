@@ -71,10 +71,20 @@
             const apiUrl = `http://openapi.foodsafetykorea.go.kr/api/cbe2a668f4ef4e189a82/조리식품의 레시피 DB/json/1/10`;
 
             fetch(apiUrl)
-                .then(response => response.json())
+                .then(response => response.text())
                 .then(data => {
-                    console.log("API 응답 데이터:", data); // 응답 데이터 구조 확인용
-                    const recipes = data.RCP_SEQ.RCP_NM.RCP_WAY2; // 데이터 구조에 맞게 수정 필요
+                    console.log("API 응답 데이터:", data); // XML 데이터 확인
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(data, "application/xml");
+
+                    // XML 데이터에서 필요한 항목 추출
+                    const rows = xmlDoc.getElementsByTagName("row");
+                    const recipes = Array.from(rows).map(row => ({
+                        RCP_SEQ: row.getElementsByTagName("RCP_SEQ")[0].textContent,
+                        RCP_NM: row.getElementsByTagName("RCP_NM")[0].textContent,
+                        RCP_WAY2: row.getElementsByTagName("RCP_WAY2")[0].textContent
+                    }));
+
                     displayRecipes(recipes);
                 })
                 .catch(error => console.error('레시피 가져오기 실패:', error));
