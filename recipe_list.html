@@ -50,13 +50,6 @@
             margin: 10px 0;
             color: #666;
         }
-
-        .recipe-ingredients,
-        .recipe-instructions {
-            margin: 5px 0;
-            font-size: 0.9rem;
-            color: #4e342e;
-        }
     </style>
 </head>
 <body>
@@ -67,14 +60,22 @@
     </div>
 
     <script>
-        // 예시 사용자 ID (로그인된 사용자 ID 사용)
-        const userId = 1; // 실제 로그인된 사용자의 ID로 설정 필요
-
-        // 레시피 목록 가져오기
+        // API에서 레시피 목록 가져오기
         function fetchRecipes() {
-            fetch(`http://localhost:3000/getRecipes/${userId}`)
+            const apiKey = "cbe2a668f4ef4e189a82";
+            const serviceId = "serviceId"; // 실제 서비스 ID로 변경
+            const dataType = "json"; // 데이터 형식 (json 또는 xml)
+            const startIdx = 1; // 시작 인덱스
+            const endIdx = 10; // 종료 인덱스
+
+            const apiUrl = `http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/${dataType}/${startIdx}/${endIdx}`;
+
+            fetch(apiUrl)
                 .then(response => response.json())
-                .then(data => displayRecipes(data))
+                .then(data => {
+                    const recipes = data.response.body.items;
+                    displayRecipes(recipes);
+                })
                 .catch(error => console.error('레시피 가져오기 실패:', error));
         }
 
@@ -83,7 +84,7 @@
             const recipeList = document.getElementById('recipe-list');
             recipeList.innerHTML = ''; // 기존 목록 초기화
 
-            if (recipes.length === 0) {
+            if (!recipes || recipes.length === 0) {
                 recipeList.innerHTML = '<p>등록된 레시피가 없습니다.</p>';
                 return;
             }
@@ -93,10 +94,8 @@
                 recipeDiv.classList.add('recipe');
 
                 recipeDiv.innerHTML = `
-                    <div class="recipe-title">${recipe.title}</div>
-                    <div class="recipe-description">${recipe.description}</div>
-                    <div class="recipe-ingredients"><strong>재료:</strong> ${recipe.ingredients}</div>
-                    <div class="recipe-instructions"><strong>조리 방법:</strong> ${recipe.instructions}</div>
+                    <div class="recipe-title">${recipe.RCP_NM}</div>
+                    <div class="recipe-description">${recipe.RCP_PARTS_DTLS}</div>
                 `;
 
                 recipeList.appendChild(recipeDiv);
