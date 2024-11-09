@@ -48,7 +48,6 @@
         }
     </style>
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
-    <script src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js"></script>
     <script>
         // Kakao SDK 초기화
         Kakao.init('d293a2647952f3e6cdd6091fe8f4d575'); // 여기에 Kakao API에서 발급받은 JavaScript 키를 넣으세요
@@ -91,33 +90,7 @@
                 document.getElementById('user-info').innerHTML = ''; // 사용자 정보 초기화
                 alert('로그아웃 성공!'); // 로그아웃 성공 메시지 출력
             });
-        }        
-        
-        // Naver 로그인 초기화
-        var naverLogin = new naver.LoginWithNaverId({
-            clientId: "2vRNRv4oSfBlZvEq_6O2", // 네이버에서 발급받은 Client ID
-            callbackUrl: "https://oreo25craker.github.io/username.github.io/", // 콜백 URL
-            isPopup: false,
-            loginButton: {color: "green", type: 3, height: "50"}
-        });
-
-        naverLogin.init();
-
-        // 네이버 로그인 상태 확인
-        naverLogin.getLoginStatus(function(status) {
-            if (status) {
-                var email = naverLogin.user.getEmail();
-                if(email == undefined || email == null) {
-                    alert("이메일은 필수 정보입니다. 정보 제공을 동의해주세요.");
-                    naverLogin.reprompt();
-                    return;
-                }
-                console.log("User email: " + email);
-                // 로그인 성공 후 처리 로직 추가
-            } else {
-                console.log("네이버 로그인 실패");
-            }
-        });
+        }
     </script>
 </head>
 <body>
@@ -126,9 +99,6 @@
         <h2>Login</h2>
         <button onclick="kakaoLogin()">
             <img src="img/Kakaologin.png" alt="Kakao 로그인">
-        </button>
-        <button onclick="naverLogin.login();">
-            <img src="img/Naverlogin.png" alt="Naver 로그인">
         </button>
     </div>
 
