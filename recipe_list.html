@@ -76,9 +76,35 @@
             background-color: #ccc;
             cursor: not-allowed;
         }
+
+        .nav-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .nav-button {
+            background-color: #f57c00;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-button:hover {
+            background-color: #d84315;
+        }
     </style>
 </head>
 <body>
+    <div class="nav-buttons">
+        <a href="index.html" class="nav-button">홈으로</a>
+        <a href="mypage.html" class="nav-button">마이페이지</a>
+    </div>
 
     <h1>레시피 목록</h1>
     <div id="loading">레시피를 불러오는 중...</div>
