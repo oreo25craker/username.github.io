@@ -46,11 +46,6 @@
             color: #f57c00;
         }
 
-        .recipe-description {
-            margin: 10px 0;
-            color: #666;
-        }
-
         #loading {
             color: #888;
             font-size: 1.1rem;
@@ -62,6 +57,25 @@
             font-size: 1.1rem;
             margin-bottom: 20px;
         }
+
+        .pagination {
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            background-color: #f57c00;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .pagination button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -72,10 +86,18 @@
     <div class="recipe-list" id="recipe-list">
         <!-- 레시피 목록이 여기에 표시됩니다 -->
     </div>
+    <div class="pagination">
+        <button id="prevButton" onclick="changePage(-1)" disabled>이전 페이지</button>
+        <button id="nextButton" onclick="changePage(1)">다음 페이지</button>
+    </div>
 
     <script>
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        const totalPages = 10; // 페이지를 10개로 제한
+
         // API에서 레시피 목록 가져오기
-        async function fetchRecipes() {
+        async function fetchRecipes(page) {
             const loadingElement = document.getElementById('loading');
             const errorElement = document.getElementById('error');
             loadingElement.style.display = 'block';
@@ -84,8 +106,8 @@
             try {
                 const apiKey = "cbe2a668f4ef4e189a82"; // 개인 API 키
                 const serviceId = "COOKRCP01"; // 조리식품의 레시피 DB 서비스 ID
-                const startIdx = 1;
-                const endIdx = 10;
+                const startIdx = (page - 1) * itemsPerPage + 1;
+                const endIdx = page * itemsPerPage;
 
                 // CORS 우회를 위한 프록시 서버 사용
                 const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
@@ -140,10 +162,25 @@
 
                 recipeList.appendChild(recipeDiv);
             });
+
+            // 페이지네이션 버튼 상태 업데이트
+            updatePaginationButtons();
         }
 
-        // 페이지 로드 시 레시피 목록 가져오기
-        window.onload = fetchRecipes;
+        // 페이지네이션 버튼 상태 업데이트
+        function updatePaginationButtons() {
+            document.getElementById('prevButton').disabled = currentPage === 1;
+            document.getElementById('nextButton').disabled = currentPage === totalPages;
+        }
+
+        // 페이지 변경 함수
+        function changePage(direction) {
+            currentPage += direction;
+            fetchRecipes(currentPage);
+        }
+
+        // 페이지 로드 시 첫 페이지의 레시피 목록 가져오기
+        window.onload = () => fetchRecipes(currentPage);
     </script>
 
 </body>
