@@ -78,7 +78,7 @@
             const serviceId = "COOKRCP01"; // 조리식품의 레시피 DB 서비스 ID
             const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
             
-            // RCP_SEQ를 URL 경로에 포함하여 요청
+            // RCP_SEQ를 URL 경로에 포함하여 요청 (수정된 부분)
             const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/1/1000`;
 
             try {
@@ -105,7 +105,7 @@
                 for (let row of rows) {
                     if (row.querySelector("RCP_SEQ").textContent === recipeId) {
                         recipeFound = row; // 해당 레시피 찾음
-                        break;
+                        break; // 찾으면 루프 종료
                     }
                 }
 
