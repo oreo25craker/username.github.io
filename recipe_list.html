@@ -74,7 +74,7 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log("API 응답 데이터:", data); // 응답 데이터 구조 확인용
-                    const recipes = data.COOKRCP01.row; // 데이터 구조에 맞게 수정 필요
+                    const recipes = data.RCP_SEQ.RCP_NM.RCP_WAY2; // 데이터 구조에 맞게 수정 필요
                     displayRecipes(recipes);
                 })
                 .catch(error => console.error('레시피 가져오기 실패:', error));
