@@ -74,7 +74,7 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log("API 응답 데이터:", data); // 응답 데이터 구조 확인용
-                    const recipes = data.COOKRCP01.row; // 데이터 구조에 맞게 수정
+                    const recipes = data.COOKRCP01.row; // 데이터 구조에 맞게 수정 필요
                     displayRecipes(recipes);
                 })
                 .catch(error => console.error('레시피 가져오기 실패:', error));
@@ -95,8 +95,9 @@
                 recipeDiv.classList.add('recipe');
 
                 recipeDiv.innerHTML = `
-                    <div class="recipe-title">${recipe.RCP_NM}</div>
-                    <div class="recipe-description">${recipe.RCP_PARTS_DTLS}</div>
+                    <div><strong>일련번호:</strong> ${recipe.RCP_SEQ || "N/A"}</div>
+                    <div class="recipe-title"><strong>메뉴명:</strong> ${recipe.RCP_NM || "N/A"}</div>
+                    <div><strong>조리방법:</strong> ${recipe.RCP_WAY2 || "N/A"}</div>
                 `;
 
                 recipeList.appendChild(recipeDiv);
