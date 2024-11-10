@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>난이도 상 - 레시피 목록</title>
-        <style>
+    <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #fffbe7;
@@ -127,19 +127,45 @@
 
                 const rows = xmlDoc.getElementsByTagName("row");
                 const hardRecipes = Array.from(rows).filter(row => {
-                    const steps = row.querySelectorAll("[id^='MANUAL']").length;
+                    const steps = Array.from(row.querySelectorAll("[id^='MANUAL']"))
+                        .filter(el => el.textContent.trim() !== "").length;
                     return steps >= 7;
                 }).map(row => ({
                     RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
                     RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
                     RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A",
-                    steps: row.querySelectorAll("[id^='MANUAL']").length
+                    steps: Array.from(row.querySelectorAll("[id^='MANUAL']"))
+                        .filter(el => el.textContent.trim() !== "").length
                 }));
 
                 displayRecipes(hardRecipes);
             } catch (error) {
                 document.getElementById('error').textContent = `레시피를 불러오는데 실패했습니다: ${error.message}`;
             }
+        }
+
+        function displayRecipes(recipes) {
+            const recipeList = document.getElementById('recipe-list');
+            recipeList.innerHTML = '';
+
+            if (recipes.length === 0) {
+                recipeList.innerHTML = '<p>해당하는 레시피가 없습니다.</p>';
+                return;
+            }
+
+            recipes.forEach(recipe => {
+                const recipeDiv = document.createElement('div');
+                recipeDiv.classList.add('recipe');
+                recipeDiv.innerHTML = `
+                    <div><strong>일련번호:</strong> ${recipe.RCP_SEQ}</div>
+                    <div class="recipe-title">
+                        <a href="recipe_detail.html?RCP_SEQ=${recipe.RCP_SEQ}">${recipe.RCP_NM}</a>
+                    </div>
+                    <div><strong>조리방법:</strong> ${recipe.RCP_WAY2}</div>
+                    <div><strong>단계 수:</strong> ${recipe.steps}</div>
+                `;
+                recipeList.appendChild(recipeDiv);
+            });
         }
 
         window.onload = fetchHardRecipes;
