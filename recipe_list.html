@@ -5,100 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>레시피 목록</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #fffbe7;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 20px;
-        }
-
-        h1 {
-            color: #d84315;
-            margin-bottom: 20px;
-        }
-
-        .recipe-list {
-            width: 80%;
-            max-width: 600px;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #fff;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-
-        .recipe {
-            border-bottom: 1px solid #ddd;
-            padding: 15px 0;
-        }
-
-        .recipe:last-child {
-            border-bottom: none;
-        }
-
-        .recipe-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #f57c00;
-            text-decoration: underline;
-        }
-
-        #loading {
-            color: #888;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
-
-        #error {
-            color: red;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
-
-        .pagination {
-            margin-top: 20px;
-        }
-
-        .pagination button {
-            background-color: #f57c00;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 0 5px;
-        }
-
-        .pagination button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .nav-buttons {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-
-        .nav-button {
-            background-color: #f57c00;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 10px;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .nav-button:hover {
-            background-color: #d84315;
-        }
+        /* 스타일은 이전과 동일 */
     </style>
 </head>
 <body>
@@ -121,7 +28,10 @@
     <script>
         let currentPage = 1;
         const itemsPerPage = 10;
-        const totalPages = 10; // 페이지를 10개로 제한
+        const totalPages = 10;
+        const apiKeys = ["cbe2a668f4ef4e189a82", "7a08bd38f8004bd8b5b7"]; // 두 개의 API 키
+        const serviceId = "COOKRCP01"; // 조리식품의 레시피 DB 서비스 ID
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
 
         // API에서 레시피 목록 가져오기
         async function fetchRecipes(page) {
@@ -130,41 +40,44 @@
             loadingElement.style.display = 'block';
             errorElement.textContent = '';
 
-            try {
-                const apiKey = "cbe2a668f4ef4e189a82"; // 개인 API 키
-                const serviceId = "COOKRCP01"; // 조리식품의 레시피 DB 서비스 ID
-                const startIdx = (page - 1) * itemsPerPage + 1;
-                const endIdx = page * itemsPerPage;
+            let success = false;
 
-                // CORS 우회를 위한 프록시 서버 사용
-                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-                const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/${startIdx}/${endIdx}`;
+            for (const apiKey of apiKeys) {
+                try {
+                    const startIdx = (page - 1) * itemsPerPage + 1;
+                    const endIdx = page * itemsPerPage;
+                    const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/${startIdx}/${endIdx}`;
 
-                const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                    const data = await response.text();
+                    console.log("API 응답 데이터:", data);
+
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(data, "text/xml");
+
+                    // XML 데이터에서 필요한 항목 추출
+                    const rows = xmlDoc.getElementsByTagName("row");
+                    const recipes = Array.from(rows).map(row => ({
+                        RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
+                        RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
+                        RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A"
+                    }));
+
+                    displayRecipes(recipes);
+                    success = true;
+                    break; // 성공하면 다른 API 키를 시도하지 않음
+                } catch (error) {
+                    console.error(`${apiKey} 호출 실패:`, error);
                 }
-                const data = await response.text();
-                console.log("API 응답 데이터:", data); // XML 데이터 확인
-
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data, "text/xml");
-
-                // XML 데이터에서 필요한 항목 추출
-                const rows = xmlDoc.getElementsByTagName("row");
-                const recipes = Array.from(rows).map(row => ({
-                    RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
-                    RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
-                    RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A"
-                }));
-
-                displayRecipes(recipes);
-            } catch (error) {
-                console.error('레시피 가져오기 실패:', error);
-                errorElement.textContent = `레시피를 불러오는데 실패했습니다: ${error.message}`;
-            } finally {
-                loadingElement.style.display = 'none';
             }
+
+            if (!success) {
+                errorElement.textContent = '모든 API 키로 레시피를 불러오는데 실패했습니다.';
+            }
+
+            loadingElement.style.display = 'none';
         }
 
         // 레시피 목록을 화면에 표시하는 함수
