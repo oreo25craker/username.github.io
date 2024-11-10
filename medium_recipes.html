@@ -112,44 +112,52 @@
     <div class="recipe-list" id="recipe-list"></div>
 
     <script>
-        async function fetchMediumRecipes() {
-            try {
-                const apiKey = "cbe2a668f4ef4e189a82";
-                const serviceId = "COOKRCP01";
-                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-                const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/1/1000`;
+       async function fetchMediumRecipes() {
+    try {
+        const apiKey = "cbe2a668f4ef4e189a82";
+        const serviceId = "COOKRCP01";
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+        const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/1/1000`;
 
-                const response = await fetch(apiUrl);
-                const data = await response.text();
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data, "text/xml");
+        const response = await fetch(apiUrl);
+        const data = await response.text();
+        console.log('API 응답:', data);
 
-                const rows = xmlDoc.getElementsByTagName("row");
-                const mediumRecipes = Array.from(rows).filter(row => {
-                    const steps = row.querySelectorAll("[id^='MANUAL']").length;
-                    return steps > 3 && steps <= 6;
-                }).map(row => ({
-                    RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
-                    RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
-                    RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A",
-                    steps: row.querySelectorAll("[id^='MANUAL']").length
-                }));
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(data, "text/xml");
 
-                displayRecipes(mediumRecipes);
-            } catch (error) {
-                const errorElement = document.getElementById('error');
-                if (errorElement) {
-                    errorElement.textContent = `레시피를 불러오는데 실패했습니다: ${error.message}`;
-                }
-                console.error('레시피 가져오기 실패:', error);
-            } finally {
-                const loadingElement = document.getElementById('loading');
-                if (loadingElement) {
-                    loadingElement.style.display = 'none';
-                }
-            }
+        const rows = xmlDoc.getElementsByTagName("row");
+        console.log('필터링 전 레시피 수:', rows.length);
+
+        const mediumRecipes = Array.from(rows).filter(row => {
+            const steps = Array.from(row.querySelectorAll("[id^='MANUAL']"))
+                .filter(el => el.textContent.trim() !== "").length;
+            return steps > 3 && steps <= 6;
+        }).map(row => ({
+            RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
+            RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
+            RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A",
+            steps: Array.from(row.querySelectorAll("[id^='MANUAL']"))
+                .filter(el => el.textContent.trim() !== "").length
+        }));
+
+        console.log('필터링 후 레시피 수:', mediumRecipes.length);
+
+        displayRecipes(mediumRecipes);
+    } catch (error) {
+        const errorElement = document.getElementById('error');
+        if (errorElement) {
+            errorElement.textContent = `레시피를 불러오는데 실패했습니다: ${error.message}`;
         }
-
+        console.error('레시피 가져오기 실패:', error);
+        console.error('에러 상세:', error.stack);
+    } finally {
+        const loadingElement = document.getElementById('loading');
+        if (loadingElement) {
+            loadingElement.style.display = 'none';
+        }
+    }
+}
         function displayRecipes(recipes) {
             const recipeList = document.getElementById('recipe-list');
             if (recipeList) {
