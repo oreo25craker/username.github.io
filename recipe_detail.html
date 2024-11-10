@@ -48,11 +48,29 @@
         .error {
             color: red;
         }
+
+        /* 새로 추가된 스타일 */
+        .back-button {
+            background-color: #f57c00;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+        }
+
+        .back-button:hover {
+            background-color: #d84315;
+        }
     </style>
 </head>
 <body>
 
     <h1>레시피 상세 정보</h1>
+    <!-- 새로 추가된 버튼 -->
+    <button class="back-button" onclick="goBack()">이전 페이지로</button>
     <div id="loading" class="loading">레시피를 불러오는 중...</div>
     <div id="error" class="error"></div>
     <div class="recipe-detail" id="recipe-detail">
@@ -63,6 +81,11 @@
     function getRecipeIdFromUrl() {
         const params = new URLSearchParams(window.location.search);
         return params.get("RCP_SEQ");
+    }
+
+    // 새로 추가된 함수
+    function goBack() {
+        window.history.back();
     }
 
     async function fetchRecipeDetail() {
@@ -156,7 +179,6 @@
 
     window.onload = fetchRecipeDetail;
 </script>
-
 
 </body>
 </html>
