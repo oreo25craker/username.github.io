@@ -44,6 +44,8 @@
             font-size: 1.2rem;
             font-weight: bold;
             color: #f57c00;
+            cursor: pointer;
+            text-decoration: underline;
         }
 
         #loading {
@@ -182,7 +184,9 @@
 
                 recipeDiv.innerHTML = `
                     <div><strong>일련번호:</strong> ${recipe.RCP_SEQ}</div>
-                    <div class="recipe-title"><strong>메뉴명:</strong> ${recipe.RCP_NM}</div>
+                    <div class="recipe-title" onclick="navigateToRecipeDetail('${recipe.RCP_SEQ}')">
+                        <strong>메뉴명:</strong> ${recipe.RCP_NM}
+                    </div>
                     <div><strong>조리방법:</strong> ${recipe.RCP_WAY2}</div>
                 `;
 
@@ -191,6 +195,11 @@
 
             // 페이지네이션 버튼 상태 업데이트
             updatePaginationButtons();
+        }
+
+        // 상세 페이지로 이동하는 함수
+        function navigateToRecipeDetail(recipeId) {
+            window.location.href = `recipe_detail.html?RCP_SEQ=${recipeId}`;
         }
 
         // 페이지네이션 버튼 상태 업데이트
