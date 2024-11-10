@@ -128,28 +128,21 @@
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
                     const data = await response.text();
-                    console.log('API 응답:', data);
-
                     const parser = new DOMParser();
                     const xmlDoc = parser.parseFromString(data, "text/xml");
 
                     const rows = xmlDoc.getElementsByTagName("row");
-                    console.log('총 레시피 수:', rows.length);
-
                     const mediumRecipes = Array.from(rows).filter(row => {
-                        const steps = Array.from(row.querySelectorAll("[id^='MANUAL']"))
-                            .filter(el => el.textContent.trim() !== "").length;
-                        console.log(`레시피: ${row.querySelector("RCP_NM")?.textContent || "N/A"}, 단계 수: ${steps}`);
-                        return steps > 3 && steps <= 6; // 난이도 중: 4~6 단계
+                        const steps = Array.from({ length: 100 }, (_, i) => row.querySelector(`MANUAL${String(i + 1).padStart(2, '0')}`))
+                            .filter(el => el && el.textContent.trim() !== "").length;
+                        return steps > 3 && steps <= 6;
                     }).map(row => ({
                         RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
                         RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
                         RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A",
-                        steps: Array.from(row.querySelectorAll("[id^='MANUAL']"))
-                            .filter(el => el.textContent.trim() !== "").length
+                        steps: Array.from({ length: 100 }, (_, i) => row.querySelector(`MANUAL${String(i + 1).padStart(2, '0')}`))
+                            .filter(el => el && el.textContent.trim() !== "").length
                     }));
-
-                    console.log('필터링 후 레시피 수:', mediumRecipes.length);
 
                     displayRecipes(mediumRecipes);
                     success = true;
@@ -160,42 +153,34 @@
             }
 
             if (!success) {
-                const errorElement = document.getElementById('error');
-                if (errorElement) {
-                    errorElement.textContent = '모든 API 키로 레시피를 불러오는데 실패했습니다.';
-                }
+                document.getElementById('error').textContent = '모든 API 키로 레시피를 불러오는데 실패했습니다.';
             }
 
-            const loadingElement = document.getElementById('loading');
-            if (loadingElement) {
-                loadingElement.style.display = 'none';
-            }
+            document.getElementById('loading').style.display = 'none';
         }
 
         function displayRecipes(recipes) {
             const recipeList = document.getElementById('recipe-list');
-            if (recipeList) {
-                recipeList.innerHTML = '';
+            recipeList.innerHTML = '';
 
-                if (recipes.length === 0) {
-                    recipeList.innerHTML = '<p>해당하는 레시피가 없습니다.</p>';
-                    return;
-                }
-
-                recipes.forEach(recipe => {
-                    const recipeDiv = document.createElement('div');
-                    recipeDiv.classList.add('recipe');
-                    recipeDiv.innerHTML = `
-                        <div><strong>일련번호:</strong> ${recipe.RCP_SEQ}</div>
-                        <div class="recipe-title">
-                            <a href="recipe_detail.html?RCP_SEQ=${recipe.RCP_SEQ}">${recipe.RCP_NM}</a>
-                        </div>
-                        <div><strong>조리방법:</strong> ${recipe.RCP_WAY2}</div>
-                        <div><strong>단계 수:</strong> ${recipe.steps}</div>
-                    `;
-                    recipeList.appendChild(recipeDiv);
-                });
+            if (recipes.length === 0) {
+                recipeList.innerHTML = '<p>해당하는 레시피가 없습니다.</p>';
+                return;
             }
+
+            recipes.forEach(recipe => {
+                const recipeDiv = document.createElement('div');
+                recipeDiv.classList.add('recipe');
+                recipeDiv.innerHTML = `
+                    <div><strong>일련번호:</strong> ${recipe.RCP_SEQ}</div>
+                    <div class="recipe-title">
+                        <a href="recipe_detail.html?RCP_SEQ=${recipe.RCP_SEQ}">${recipe.RCP_NM}</a>
+                    </div>
+                    <div><strong>조리방법:</strong> ${recipe.RCP_WAY2}</div>
+                    <div><strong>단계 수:</strong> ${recipe.steps}</div>
+                `;
+                recipeList.appendChild(recipeDiv);
+            });
         }
 
         window.onload = fetchMediumRecipes;
