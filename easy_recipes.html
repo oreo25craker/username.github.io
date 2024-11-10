@@ -116,7 +116,7 @@
         async function fetchEasyRecipes() {
             // 기존 fetchRecipes 함수와 동일하게 데이터를 가져오되, 3단계 이하 필터링 추가
             try {
-                const apiKey = "cbe2a668f4ef4e189a82";
+                const apiKeys = ["cbe2a668f4ef4e189a82", "7a08bd38f8004bd8b5b7", "25a15d1b109445e38baf"];
                 const serviceId = "COOKRCP01";
                 const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
                 const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/1/1000`;
