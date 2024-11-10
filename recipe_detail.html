@@ -65,69 +65,104 @@
         <!-- 레시피 목록이 여기에 표시됩니다 -->
     </div>
 
-    <script>
-        async function fetchRecipes() {
-            const apiKey = "cbe2a668f4ef4e189a82";
-            const serviceId = "COOKRCP01";
-            const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-            const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/1/1000`;
+<script>
+    function getRecipeIdFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("RCP_SEQ");
+    }
 
-            try {
-                const loadingElement = document.getElementById('loading');
-                const errorElement = document.getElementById('error');
-                loadingElement.style.display = 'block';
-                errorElement.textContent = '';
-
-                const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.text();
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data, "application/xml");
-
-                const rows = xmlDoc.getElementsByTagName("row");
-                const recipes = Array.from(rows).map(row => ({
-                    RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
-                    RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
-                    RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A",
-                    RCP_PARTS_DTLS: row.querySelector("RCP_PARTS_DTLS")?.textContent || "N/A"
-                }));
-
-                displayRecipes(recipes);
-            } catch (error) {
-                console.error('레시피 가져오기 실패:', error);
-                document.getElementById('error').textContent = `레시피를 불러오는데 실패했습니다: ${error.message}`;
-            } finally {
-                document.getElementById('loading').style.display = 'none';
-            }
+    async function fetchRecipeDetail() {
+        const recipeId = getRecipeIdFromUrl();
+        if (!recipeId) {
+            document.getElementById('error').textContent = '레시피 ID가 제공되지 않았습니다.';
+            return;
         }
 
-        function displayRecipes(recipes) {
-            const recipeList = document.getElementById('recipe-list');
-            recipeList.innerHTML = ''; // 기존 목록 초기화
+        const apiKey = "cbe2a668f4ef4e189a82";
+        const serviceId = "COOKRCP01";
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+        const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/1/1000`;
 
-            if (recipes.length === 0) {
-                recipeList.innerHTML = '<p>등록된 레시피가 없습니다.</p>';
+        try {
+            const loadingElement = document.getElementById('loading');
+            const errorElement = document.getElementById('error');
+            loadingElement.style.display = 'block';
+            errorElement.textContent = '';
+
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.text();
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(data, "application/xml");
+
+            // 특정 recipeId와 일치하는 row 찾기
+            const row = Array.from(xmlDoc.querySelectorAll("row")).find(r => 
+                r.querySelector("RCP_SEQ")?.textContent === recipeId
+            );
+
+            if (!row) {
+                errorElement.textContent = '해당 레시피 정보를 찾을 수 없습니다.';
                 return;
             }
 
-            recipes.forEach(recipe => {
-                const recipeDiv = document.createElement('div');
-                recipeDiv.classList.add('recipe-item');
-                recipeDiv.innerHTML = `
-                    <div class="recipe-title">${recipe.RCP_NM}</div>
-                    <div class="recipe-info"><strong>조리방법:</strong> ${recipe.RCP_WAY2}</div>
-                    <div class="recipe-info"><strong>재료:</strong> ${recipe.RCP_PARTS_DTLS}</div>
-                    <a href="recipe_detail.html?RCP_SEQ=${recipe.RCP_SEQ}">상세 보기</a>
-                `;
-                recipeList.appendChild(recipeDiv);
-            });
-        }
+            const recipe = {
+                RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
+                RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
+                RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A",
+                RCP_PARTS_DTLS: row.querySelector("RCP_PARTS_DTLS")?.textContent || "N/A",
+                steps: []
+            };
 
-        window.onload = fetchRecipes;
-    </script>
+            // 조리 단계(MANUAL01 ~ MANUAL20)와 이미지(MANUAL_IMG01 ~ MANUAL_IMG20)를 동적으로 추가
+            for (let i = 1; i <= 20; i++) {
+                const stepText = row.querySelector(`MANUAL${String(i).padStart(2, '0')}`)?.textContent;
+                const stepImg = row.querySelector(`MANUAL_IMG${String(i).padStart(2, '0')}`)?.textContent;
+                if (stepText) {
+                    recipe.steps.push({ text: stepText, img: stepImg });
+                }
+            }
+
+            displayRecipeDetail(recipe);
+        } catch (error) {
+            console.error('레시피 가져오기 실패:', error);
+            document.getElementById('error').textContent = `레시피를 불러오는데 실패했습니다: ${error.message}`;
+        } finally {
+            document.getElementById('loading').style.display = 'none';
+        }
+    }
+
+    function displayRecipeDetail(recipe) {
+        const recipeDetail = document.getElementById('recipe-detail');
+        recipeDetail.innerHTML = `
+            <div class="recipe-title">${recipe.RCP_NM}</div>
+            <div class="recipe-info"><strong>조리방법:</strong> ${recipe.RCP_WAY2}</div>
+            <div class="recipe-info"><strong>재료:</strong> ${recipe.RCP_PARTS_DTLS}</div>
+        `;
+
+        recipe.steps.forEach((step, index) => {
+            const stepDiv = document.createElement('div');
+            stepDiv.classList.add('recipe-info');
+            stepDiv.innerHTML = `<strong>${index + 1}단계:</strong> ${step.text}`;
+
+            if (step.img) {
+                const img = document.createElement('img');
+                img.src = step.img;
+                img.alt = `${index + 1}단계 이미지`;
+                img.style.width = "100%";
+                img.style.marginTop = "10px";
+                stepDiv.appendChild(img);
+            }
+
+            recipeDetail.appendChild(stepDiv);
+        });
+    }
+
+    window.onload = fetchRecipeDetail;
+</script>
+
 
 </body>
 </html>
