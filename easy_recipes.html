@@ -4,100 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>난이도 하 - 레시피 목록</title>
-        <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #fffbe7;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 20px;
-        }
-
-        h1 {
-            color: #d84315;
-            margin-bottom: 20px;
-        }
-
-        .recipe-list {
-            width: 80%;
-            max-width: 600px;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #fff;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-
-        .recipe {
-            border-bottom: 1px solid #ddd;
-            padding: 15px 0;
-        }
-
-        .recipe:last-child {
-            border-bottom: none;
-        }
-
-        .recipe-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #f57c00;
-            text-decoration: underline;
-        }
-
-        #loading {
-            color: #888;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
-
-        #error {
-            color: red;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
-
-        .pagination {
-            margin-top: 20px;
-        }
-
-        .pagination button {
-            background-color: #f57c00;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 0 5px;
-        }
-
-        .pagination button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .nav-button {
-            background-color: #f57c00;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .nav-button:hover {
-            background-color: #d84315;
-        }
+    <style>
+        /* 기존 스타일 */
     </style>
 </head>
 <body>
@@ -114,38 +22,57 @@
 
     <script>
         async function fetchEasyRecipes() {
-            // 기존 fetchRecipes 함수와 동일하게 데이터를 가져오되, 3단계 이하 필터링 추가
-            try {
-                const apiKeys = ["cbe2a668f4ef4e189a82", "7a08bd38f8004bd8b5b7", "25a15d1b109445e38baf"];
-                const serviceId = "COOKRCP01";
-                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-                const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/1/1000`;
+            const apiKeys = ["cbe2a668f4ef4e189a82", "7a08bd38f8004bd8b5b7", "25a15d1b109445e38baf"];
+            const serviceId = "COOKRCP01";
+            const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+            let success = false;
 
-                const response = await fetch(apiUrl);
-                const data = await response.text();
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data, "text/xml");
+            for (const apiKey of apiKeys) {
+                try {
+                    const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/1/1000`;
+                    console.log(`API 호출 URL: ${apiUrl}`);  // 호출 URL 확인용 로그
 
-                const rows = xmlDoc.getElementsByTagName("row");
-                const easyRecipes = Array.from(rows).filter(row => {
-                    const steps = row.querySelectorAll("[id^='MANUAL']").length;
-                    return steps <= 3;
-                }).map(row => ({
-                    RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
-                    RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
-                    RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A",
-                    steps: row.querySelectorAll("[id^='MANUAL']").length
-                }));
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-                displayRecipes(easyRecipes);
-            } catch (error) {
-                document.getElementById('error').textContent = `레시피를 불러오는데 실패했습니다: ${error.message}`;
+                    const data = await response.text();
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(data, "text/xml");
+
+                    const rows = xmlDoc.getElementsByTagName("row");
+                    const easyRecipes = Array.from(rows).filter(row => {
+                        const steps = row.querySelectorAll("[id^='MANUAL']").length;
+                        return steps <= 3;
+                    }).map(row => ({
+                        RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
+                        RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
+                        RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A",
+                        steps: row.querySelectorAll("[id^='MANUAL']").length
+                    }));
+
+                    displayRecipes(easyRecipes);
+                    success = true;
+                    break;  // 성공하면 반복문 종료
+                } catch (error) {
+                    console.error(`API 키 ${apiKey} 호출 실패:`, error);
+                }
             }
+
+            if (!success) {
+                document.getElementById('error').textContent = '모든 API 키로 레시피를 불러오는데 실패했습니다.';
+            }
+
+            document.getElementById('loading').style.display = 'none';
         }
 
         function displayRecipes(recipes) {
             const recipeList = document.getElementById('recipe-list');
             recipeList.innerHTML = '';
+
+            if (recipes.length === 0) {
+                recipeList.innerHTML = '<p>해당하는 레시피가 없습니다.</p>';
+                return;
+            }
 
             recipes.forEach(recipe => {
                 const recipeDiv = document.createElement('div');
