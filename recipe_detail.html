@@ -60,13 +60,11 @@
     </div>
 
     <script>
-        // URL에서 RCP_SEQ 값을 추출하는 함수
         function getRecipeIdFromUrl() {
             const params = new URLSearchParams(window.location.search);
             return params.get("RCP_SEQ");
         }
 
-        // API에서 레시피 상세 정보 가져오기
         async function fetchRecipeDetail() {
             const recipeId = getRecipeIdFromUrl();
             if (!recipeId) {
@@ -74,10 +72,10 @@
                 return;
             }
 
-            const apiKey = "cbe2a668f4ef4e189a82"; // 개인 API 키
-            const serviceId = "COOKRCP01"; // 조리식품의 레시피 DB 서비스 ID
+            const apiKey = "cbe2a668f4ef4e189a82";
+            const serviceId = "COOKRCP01";
             const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-            const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/1/1/RCP_SEQ=${recipeId}`;
+            const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/1/5/RCP_SEQ=${recipeId}`;
 
             try {
                 const loadingElement = document.getElementById('loading');
@@ -91,8 +89,6 @@
                 }
 
                 const data = await response.text();
-                console.log("API 응답 데이터:", data); // XML 데이터 확인용
-
                 const parser = new DOMParser();
                 const xmlDoc = parser.parseFromString(data, "application/xml");
 
@@ -110,7 +106,6 @@
                     steps: []
                 };
 
-                // 조리 단계(MANUAL01 ~ MANUAL20)와 이미지(MANUAL_IMG01 ~ MANUAL_IMG20)를 동적으로 추가
                 for (let i = 1; i <= 20; i++) {
                     const stepText = row.querySelector(`MANUAL${String(i).padStart(2, '0')}`)?.textContent;
                     const stepImg = row.querySelector(`MANUAL_IMG${String(i).padStart(2, '0')}`)?.textContent;
@@ -128,7 +123,6 @@
             }
         }
 
-        // 레시피 상세 정보를 화면에 표시하는 함수
         function displayRecipeDetail(recipe) {
             const recipeDetail = document.getElementById('recipe-detail');
             recipeDetail.innerHTML = `
@@ -137,7 +131,6 @@
                 <div class="recipe-info"><strong>재료:</strong> ${recipe.RCP_PARTS_DTLS}</div>
             `;
 
-            // 각 조리 단계 출력
             recipe.steps.forEach((step, index) => {
                 const stepDiv = document.createElement('div');
                 stepDiv.classList.add('recipe-info');
@@ -156,7 +149,6 @@
             });
         }
 
-        // 페이지 로드 시 레시피 상세 정보 가져오기
         window.onload = fetchRecipeDetail;
     </script>
 
