@@ -133,7 +133,6 @@
 
                     const rows = xmlDoc.getElementsByTagName("row");
                     const easyRecipes = Array.from(rows).filter(row => {
-                        // "MANUAL01"부터 "MANUAL20"까지의 태그들을 체크하여 내용이 있는 것만 카운트
                         let stepCount = 0;
                         for (let i = 1; i <= 20; i++) {
                             const step = row.querySelector(`MANUAL${String(i).padStart(2, '0')}`);
@@ -141,7 +140,7 @@
                                 stepCount++;
                             }
                         }
-                        return stepCount <= 3;
+                        return stepCount > 0 && stepCount <= 3; // 난이도 하에 해당하는 레시피
                     }).map(row => ({
                         RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
                         RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
@@ -191,7 +190,7 @@
                         <a href="recipe_detail.html?RCP_SEQ=${recipe.RCP_SEQ}">${recipe.RCP_NM}</a>
                     </div>
                     <div><strong>조리방법:</strong> ${recipe.RCP_WAY2}</div>
-                    <div><strong>단계 수:</strong> ${recipe.stepCount}</div>
+                    <div><strong>단계 수:</strong> ${recipe.steps}</div>
                 `;
                 recipeList.appendChild(recipeDiv);
             });
