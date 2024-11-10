@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>난이도 중 - 레시피 목록</title>
+    <style> /* 스타일은 이전과 동일 */ </style>
+</head>
+<body>
+    <div class="nav-buttons">
+        <a href="index.html" class="nav-button">홈으로</a>
+        <a href="easy_recipes.html" class="nav-button">난이도 하</a>
+        <a href="hard_recipes.html" class="nav-button">난이도 상</a>
+    </div>
+
+    <h1>난이도 중 - 레시피 목록</h1>
+    <div id="loading">레시피를 불러오는 중...</div>
+    <div id="error"></div>
+    <div class="recipe-list" id="recipe-list"></div>
+
+    <script>
+        async function fetchMediumRecipes() {
+            try {
+                const apiKey = "cbe2a668f4ef4e189a82";
+                const serviceId = "COOKRCP01";
+                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+                const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/1/1000`;
+
+                const response = await fetch(apiUrl);
+                const data = await response.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data, "text/xml");
+
+                const rows = xmlDoc.getElementsByTagName("row");
+                const mediumRecipes = Array.from(rows).filter(row => {
+                    const steps = row.querySelectorAll("[id^='MANUAL']").length;
+                    return steps >= 4 && steps <= 6;
+                }).map(row => ({
+                    RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
+                    RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
+                    RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A",
+                    steps: row.querySelectorAll("[id^='MANUAL']").length
+                }));
+
+                displayRecipes(mediumRecipes);
+            } catch (error) {
+                document.getElementById('error').textContent = `레시피를 불러오는데 실패했습니다: ${error.message}`;
+            }
+        }
+
+        window.onload = fetchMediumRecipes;
+    </script>
+</body>
+</html>
