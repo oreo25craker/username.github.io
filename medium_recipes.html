@@ -1,64 +1,88 @@
-<script>
-    async function fetchMediumRecipes() {
-        try {
-            const apiKey = "cbe2a668f4ef4e189a82";
-            const serviceId = "COOKRCP01";
-            const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-            const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/1/1000`;
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>난이도 중 - 레시피 목록</title>
+    <style>
+        /* 기존 스타일 유지 */
+    </style>
+</head>
+<body>
+    <div class="nav-buttons">
+        <a href="index.html" class="nav-button">홈으로</a>
+        <a href="easy_recipes.html" class="nav-button">난이도 하</a>
+        <a href="hard_recipes.html" class="nav-button">난이도 상</a>
+    </div>
 
-            const response = await fetch(apiUrl);
-            const data = await response.text();
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(data, "text/xml");
+    <h1>난이도 중 - 레시피 목록</h1>
+    <div id="loading">레시피를 불러오는 중...</div>
+    <div id="error"></div>
+    <div class="recipe-list" id="recipe-list"></div>
 
-            const rows = xmlDoc.getElementsByTagName("row");
-            const mediumRecipes = Array.from(rows).filter(row => {
-                const steps = row.querySelectorAll("[id^='MANUAL']").length;
-                return steps > 3 && steps <= 6;
-            }).map(row => ({
-                RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
-                RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
-                RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A",
-                steps: row.querySelectorAll("[id^='MANUAL']").length
-            }));
+    <script>
+        async function fetchMediumRecipes() {
+            try {
+                const apiKey = "cbe2a668f4ef4e189a82";
+                const serviceId = "COOKRCP01";
+                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+                const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/1/1000`;
 
-            displayRecipes(mediumRecipes);
-        } catch (error) {
-            console.error('레시피를 불러오는데 실패했습니다:', error);
-            const errorElement = document.getElementById('error');
-            if (errorElement) {
-                errorElement.textContent = `레시피를 불러오는데 실패했습니다: ${error.message}`;
-            }
-        } finally {
-            const loadingElement = document.getElementById('loading');
-            if (loadingElement) {
-                loadingElement.style.display = 'none';
+                const response = await fetch(apiUrl);
+                const data = await response.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data, "text/xml");
+
+                const rows = xmlDoc.getElementsByTagName("row");
+                const mediumRecipes = Array.from(rows).filter(row => {
+                    // 'MANUAL'로 시작하는 id를 가진 요소의 수를 계산
+                    const steps = row.querySelectorAll("[id^='MANUAL']").length;
+                    // 3단계 초과 6단계 이하의 레시피만 필터링
+                    return steps > 3 && steps <= 6;
+                }).map(row => ({
+                    RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
+                    RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
+                    RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A",
+                    steps: row.querySelectorAll("[id^='MANUAL']").length
+                }));
+
+                displayRecipes(mediumRecipes);
+            } catch (error) {
+                const errorElement = document.getElementById('error');
+                if (errorElement) {
+                    errorElement.textContent = `레시피를 불러오는데 실패했습니다: ${error.message}`;
+                }
+                console.error('레시피 가져오기 실패:', error);
+            } finally {
+                const loadingElement = document.getElementById('loading');
+                if (loadingElement) {
+                    loadingElement.style.display = 'none';
+                }
             }
         }
-    }
 
-    function displayRecipes(recipes) {
-        const recipeList = document.getElementById('recipe-list');
-        if (recipeList) {
-            recipeList.innerHTML = '';
+        function displayRecipes(recipes) {
+            const recipeList = document.getElementById('recipe-list');
+            if (recipeList) {
+                recipeList.innerHTML = '';
 
-            recipes.forEach(recipe => {
-                const recipeDiv = document.createElement('div');
-                recipeDiv.classList.add('recipe');
-                recipeDiv.innerHTML = `
-                    <div><strong>일련번호:</strong> ${recipe.RCP_SEQ}</div>
-                    <div class="recipe-title">
-                        <a href="recipe_detail.html?RCP_SEQ=${recipe.RCP_SEQ}">${recipe.RCP_NM}</a>
-                    </div>
-                    <div><strong>조리방법:</strong> ${recipe.RCP_WAY2}</div>
-                    <div><strong>단계 수:</strong> ${recipe.steps}</div>
-                `;
-                recipeList.appendChild(recipeDiv);
-            });
+                recipes.forEach(recipe => {
+                    const recipeDiv = document.createElement('div');
+                    recipeDiv.classList.add('recipe');
+                    recipeDiv.innerHTML = `
+                        <div><strong>일련번호:</strong> ${recipe.RCP_SEQ}</div>
+                        <div class="recipe-title">
+                            <a href="recipe_detail.html?RCP_SEQ=${recipe.RCP_SEQ}">${recipe.RCP_NM}</a>
+                        </div>
+                        <div><strong>조리방법:</strong> ${recipe.RCP_WAY2}</div>
+                        <div><strong>단계 수:</strong> ${recipe.steps}</div>
+                    `;
+                    recipeList.appendChild(recipeDiv);
+                });
+            }
         }
-    }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        fetchMediumRecipes();
-    });
-</script>
+        document.addEventListener('DOMContentLoaded', fetchMediumRecipes);
+    </script>
+</body>
+</html>
