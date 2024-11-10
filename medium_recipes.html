@@ -122,7 +122,7 @@
             for (const apiKey of apiKeys) {
                 try {
                     const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/1/1000`;
-                    console.log(`API 호출 URL: ${apiUrl}`); // 호출 URL 확인용 로그
+                    console.log(`API 호출 URL: ${apiUrl}`);
 
                     const response = await fetch(apiUrl);
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -140,7 +140,7 @@
                         const steps = Array.from(row.querySelectorAll("[id^='MANUAL']"))
                             .filter(el => el.textContent.trim() !== "").length;
                         console.log(`레시피: ${row.querySelector("RCP_NM")?.textContent || "N/A"}, 단계 수: ${steps}`);
-                        return steps > 3 && steps <= 6;
+                        return steps > 3 && steps <= 6; // 난이도 중: 4~6 단계
                     }).map(row => ({
                         RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
                         RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
@@ -153,7 +153,7 @@
 
                     displayRecipes(mediumRecipes);
                     success = true;
-                    break; // API 호출에 성공하면 반복문 종료
+                    break;
                 } catch (error) {
                     console.error(`API 키 ${apiKey} 호출 실패:`, error);
                 }
