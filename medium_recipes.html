@@ -5,8 +5,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>난이도 중 - 레시피 목록</title>
     <style>
-        /* 기존 스타일 유지 */
-    </style>
+   body {
+            font-family: Arial, sans-serif;
+            background-color: #fffbe7;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #d84315;
+            margin-bottom: 20px;
+        }
+
+        .recipe-list {
+            width: 80%;
+            max-width: 600px;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .recipe {
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+        }
+
+        .recipe:last-child {
+            border-bottom: none;
+        }
+
+        .recipe-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #f57c00;
+            text-decoration: underline;
+        }
+
+        #loading {
+            color: #888;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        #error {
+            color: red;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .pagination {
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            background-color: #f57c00;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .pagination button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-button {
+            background-color: #f57c00;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-button:hover {
+            background-color: #d84315;
+        }    </style>
 </head>
 <body>
     <div class="nav-buttons">
