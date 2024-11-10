@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>레시피 목록</title>
+    <title>레시피 상세 정보</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,9 +15,8 @@
             padding: 20px;
         }
 
-        .recipe-list {
-            max-width: 800px;
-            width: 100%;
+        .recipe-detail {
+            max-width: 600px;
             padding: 20px;
             background-color: #fff;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
@@ -29,20 +28,15 @@
             color: #d84315;
         }
 
-        .recipe-item {
-            border-bottom: 1px solid #ddd;
-            padding: 15px 0;
-        }
-
         .recipe-title {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             font-weight: bold;
             color: #f57c00;
             margin-bottom: 10px;
         }
 
         .recipe-info {
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
 
         .loading, .error {
@@ -58,11 +52,11 @@
 </head>
 <body>
 
-    <h1>레시피 목록</h1>
+    <h1>레시피 상세 정보</h1>
     <div id="loading" class="loading">레시피를 불러오는 중...</div>
     <div id="error" class="error"></div>
-    <div class="recipe-list" id="recipe-list">
-        <!-- 레시피 목록이 여기에 표시됩니다 -->
+    <div class="recipe-detail" id="recipe-detail">
+        <!-- 레시피 상세 정보가 여기에 표시됩니다 -->
     </div>
 
 <script>
