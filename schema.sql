@@ -23,3 +23,18 @@ CREATE TABLE recipes (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
+
+-- 알레르기 테이블
+CREATE TABLE Allergies (
+    allergy_id INT PRIMARY KEY AUTO_INCREMENT,
+    allergy_name VARCHAR(50)
+);
+
+-- 사용자-알레르기 관계 테이블
+CREATE TABLE UserAllergies (
+    user_id INT,
+    allergy_id INT,
+    PRIMARY KEY (user_id, allergy_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (allergy_id) REFERENCES Allergies(allergy_id)
+);
