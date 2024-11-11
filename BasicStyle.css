@@ -1,0 +1,112 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0fdf4; /* 라이트 크림 배경 */
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    background-color: #a5d6a7; /* 민트색 헤더 */
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-left: 10px;
+}
+
+.icon {
+    width: 50px;
+    height: 50px;
+}
+
+.user-actions {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.user-actions a {
+    background-color: #ffe0b2; /* 피치색 버튼 */
+    color: #333;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.user-actions a:hover {
+    background-color: #ffcc80; /* 피치색 호버 효과 */
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    background-color: #81c784; /* 민트색 네비게이션 */
+    padding: 10px 0;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+}
+
+nav a:hover {
+    background-color: #66bb6a; /* 진한 민트 호버 효과 */
+    transition: background-color 0.3s ease;
+}
+
+main {
+    margin: 50px 0;
+    text-align: center;
+}
+
+h2 {
+    color: #4e342e; /* 진한 갈색 부제목 */
+    margin-bottom: 30px;
+}
+
+p {
+    margin-bottom: 15px;
+    color: #5d4037; /* 본문 짙은 갈색 */
+}
+
+footer {
+    background-color: #8d6e63; /* 초콜릿 갈색 푸터 */
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    margin-top: 20px;
+}
+
+footer a {
+    color: #ffcc80; /* 푸터 링크 피치색 */
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: #ffe0b2; /* 밝은 피치색 호버 효과 */
+}
