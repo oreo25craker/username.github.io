@@ -50,33 +50,52 @@
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
     <script>
         // Kakao SDK 초기화
-        Kakao.init('d293a2647952f3e6cdd6091fe8f4d575');
+        Kakao.init('d293a2647952f3e6cdd6091fe8f4d575'); // 여기에 Kakao API에서 발급받은 JavaScript 키를 넣으세요
 
         function kakaoLogin() {
             Kakao.Auth.login({
-                success: function(authObj) {
+                success: function (authObj) {
+                    console.log(authObj);
                     alert('Kakao 로그인 성공!');
-                    getUserInfo(); // 로그인 성공 후 사용자 정보 가져오기
+                    getUserInfo(); // 사용자 정보 가져오기
+                    window.location.href = 'index.html'; // 메인 페이지로 이동
                 },
-                fail: function(err) {
+                fail: function (err) {
                     console.error(err);
                     alert('Kakao 로그인 실패');
                 }
             });
         }
 
-        // 로그인 후 사용자 정보 가져오고 저장
         function getUserInfo() {
             Kakao.API.request({
                 url: '/v2/user/me',
-                success: function(res) {
-                    // 로그인 상태 저장
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('userName', res.kakao_account.profile.nickname); // 사용자 이름 저장
-                    window.location.href = 'mypage.html'; // 마이페이지로 이동
+                success: function (res) {
+                    console.log('사용자 정보:', res);
+                    document.getElementById('user-info').innerHTML = `
+                        <h2>환영합니다, ${res.kakao_account.profile.nickname}님!</h2>
+                        <img src="${res.kakao_account.profile.profile_image}" alt="프로필 이미지">
+                        <button onclick="logout()">로그아웃</button>
+                    `;
                 },
-                fail: function(err) {
+                fail: function (err) {
                     console.error('사용자 정보 요청 실패:', err);
+                }
+            });
+        }
+        
+        function logout() {
+            Kakao.Auth.logout(function() {
+                 if (!Kakao.Auth.getAccessToken()) {
+                    console.log('로그아웃 성공');
+                    alert('로그아웃 성공!');
+                    // 사용자 정보 초기화
+                    document.getElementById('user-info').innerHTML = '';
+                    // 메인 페이지로 리다이렉트 또는 페이지 새로고침
+                    window.location.href = 'index.html';
+                } else {
+                    console.error('로그아웃 실패');
+                    alert('로그아웃에 실패했습니다. 다시 시도해 주세요.')
                 }
             });
         }
@@ -90,5 +109,6 @@
             <img src="img/Kakaologin.png" alt="Kakao 로그인">
         </button>
     </div>
+
 </body>
 </html>
