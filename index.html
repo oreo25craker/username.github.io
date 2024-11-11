@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>레시피 알려주는 웹</title>
+    <meta name="description" content="쉽고 간단한 레시피를 제공하는 웹사이트">
 
+    <!-- 스타일시트 로드 -->
     <link rel="stylesheet" href="BasicStyle.css">
-
 </head>
 <body>
 
     <header>
-        <img src="img/MainIcon.png" alt="레시피 아이콘" class="icon">
+        <img src="img/MainIcon.png" alt="레시피 아이콘" class="icon" loading="lazy">
         <h1>레시피 알려주는 웹</h1>
         <div class="user-actions" id="user-actions">
             <!-- 여기에 로그인 또는 마이페이지 버튼이 동적으로 표시됩니다 -->
@@ -38,26 +39,35 @@
         <p>&copy; 2024 레시피 알려주는 웹</p>
     </footer>
 
+    <!-- 스크립트 로드 -->
+    <script src="app.js" defer></script>
     <script>
+        // 로그인 상태 확인
         function checkLoginStatus() {
             return localStorage.getItem('isLoggedIn') === 'true';
         }
 
+        // 페이지 로드 시 사용자 상태 업데이트
         window.onload = function() {
             const userActions = document.getElementById('user-actions');
             if (checkLoginStatus()) {
-                userActions.innerHTML = '<a href="mypage.html">마이페이지</a>';
+                const userName = localStorage.getItem('userName') || "사용자";
+                userActions.innerHTML = `<a href="mypage.html">환영합니다, ${userName}!</a>`;
             } else {
                 userActions.innerHTML = '<a href="login.html">로그인</a>';
             }
         }
 
+        // 로그인 기능 예시
         function login() {
             localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userName', '홍길동'); // 로그인 시 사용자 이름 설정 (예시)
         }
 
+        // 로그아웃 기능 예시
         function logout() {
             localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userName'); // 로그아웃 시 사용자 이름 초기화
         }
     </script>
 </body>
