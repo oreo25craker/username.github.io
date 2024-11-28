@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>레시피 목록</title>
+    <link href="BasicStyle.css" rel="stylesheet">
     <style>
         /* 검색창 스타일 */
         .search-container {
@@ -12,6 +13,7 @@
             margin-bottom: 20px;
         }
          #searchInput {
+            text-align: center;
             width: 100%;
             padding: 15px;
             font-size: 1.2rem;
@@ -23,21 +25,18 @@
             border-color: #f57c00; /* 포커스 시 테두리 색상 변경 */
             outline: none;
         }
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #fffbe7;
-            color: #333;
+        
+        main {
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
-            margin: 0;
+            width: 100%;
             padding: 20px;
+            box-sizing: border-box;
         }
 
-        h1 {
-            color: #d84315;
-            margin-bottom: 20px;
-        }
+
 
         .recipe-list {
             width: 80%;
@@ -119,12 +118,19 @@
     </style>
 </head>
 <body>
-    <div class="nav-buttons">
-        <a href="index.html" class="nav-button">홈으로</a>
-        <a href="mypage.html" class="nav-button">마이페이지</a>
-    </div>
+    <header>
+        <img src="img/MainIcon.png" alt="레시피 아이콘" class="icon" loading="lazy">
+        <h1>레시피 알려주는 웹</h1>
+        
+    </header>
 
-    <h1>레시피 목록</h1>
+    <nav aria-label="Main Navigation">
+        <a href="index.html" aria-label="Home">Home</a>
+        <a href="mypage.html" aria-label="About">Mypage</a>
+        <a href="recipe_list.html" aria-label="레시피 목록">레시피 목록</a>
+        <a href="allergys.html" aria-label="알레르기 검사">알레르기 검사</a>
+    </nav>
+    <main>
 
     <!-- 검색창 -->
     <div class="search-container">
@@ -147,7 +153,7 @@
         <button id="prevButton" onclick="changePage(-1)" disabled>이전 페이지</button>
         <button id="nextButton" onclick="changePage(1)">다음 페이지</button>
     </div>
-
+</main>
     <script>
         let currentPage = 1;
         const itemsPerPage = 10;
