@@ -3,108 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>알레르기 검사 페이지</title>
+    <title>음식 알레르기 검사</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #fffbe7;
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f4f8;
             color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
             margin: 0;
             padding: 20px;
+            line-height: 1.6;
         }
 
-        h1 {
-            color: #d84315;
-            margin-bottom: 20px;
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
         }
 
         .allergy-form {
-            width: 80%;
-            max-width: 600px;
-            background-color: #fff;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
         }
 
         .allergy-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .allergy-group label {
+            display: block;
             font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .allergy-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
         }
 
         .allergy-item {
-            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .allergy-item input[type="checkbox"] {
+            margin-right: 8px;
         }
 
         button {
-            background-color: #f57c00;
+            width: 100%;
+            background-color: #3498db;
             color: white;
-            padding: 10px 20px;
             border: none;
-            border-radius: 5px;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 6px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
         button:hover {
-            background-color: #d84315;
+            background-color: #2980b9;
         }
 
         .result {
             margin-top: 20px;
-            font-weight: bold;
+            padding: 15px;
+            background-color: #e8f4fd;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
-
-    <h1>음식 알레르기 검사</h1>
-    <div class="allergy-form">
-        <form id="allergyForm">
-            <!-- 알레르기 항목 -->
+    <div class="container">
+        <div class="header">
+            <h1>음식 알레르기 검사</h1>
+        </div>
+        <form id="allergyForm" class="allergy-form">
             <div class="allergy-group">
-                <label>알레르기 항목</label>
-                <div class="allergy-item"><input type="checkbox" name="allergy" value="난류">  난류</div>
-                <div class="allergy-item"><input type="checkbox" name="allergy" value="우유">  우유</div>
-                <div class="allergy-item"><input type="checkbox" name="allergy" value="메밀">  메밀</div>
-                <div class="allergy-item"><input type="checkbox" name="allergy" value="땅콩">  땅콩</div>
-                <div class="allergy-item"><input type="checkbox" name="allergy" value="대두">  대두</div>
-                <div class="allergy-item"><input type="checkbox" name="allergy" value="밀">  밀</div>
-                <div class="allergy-item"><input type="checkbox" name="allergy" value="고등어">  고등어</div>
-                <div class="allergy-item"><input type="checkbox" name="allergy" value="게">  게</div>
-                <div class="allergy-item"><input type="checkbox" name="allergy" value="새우">  새우</div>
-                <div class="allergy-item"><input type="checkbox" name="allergy" value="돼지고기">  돼지고기</div>
-                <div class="allergy-item"><input type="checkbox" name="allergy" value="복숭아">  복숭아</div>
-                <div class="allergy-item"><input type="checkbox" name="allergy" value="토마토">  토마토</div>
+                <label>알레르기 항목을 선택하세요:</label>
+                <div class="allergy-items">
+                    <div class="allergy-item">
+                        <input type="checkbox" id="allergy-1" name="allergy" value="난류">
+                        <label for="allergy-1">난류</label>
+                    </div>
+                    <div class="allergy-item">
+                        <input type="checkbox" id="allergy-2" name="allergy" value="우유">
+                        <label for="allergy-2">우유</label>
+                    </div>
+                    <div class="allergy-item">
+                        <input type="checkbox" id="allergy-3" name="allergy" value="메밀">
+                        <label for="allergy-3">메밀</label>
+                    </div>
+                    <div class="allergy-item">
+                        <input type="checkbox" id="allergy-4" name="allergy" value="땅콩">
+                        <label for="allergy-4">땅콩</label>
+                    </div>
+                    <div class="allergy-item">
+                        <input type="checkbox" id="allergy-5" name="allergy" value="대두">
+                        <label for="allergy-5">대두</label>
+                    </div>
+                    <div class="allergy-item">
+                        <input type="checkbox" id="allergy-6" name="allergy" value="밀">
+                        <label for="allergy-6">밀</label>
+                    </div>
+                    <div class="allergy-item">
+                        <input type="checkbox" id="allergy-7" name="allergy" value="고등어">
+                        <label for="allergy-7">고등어</label>
+                    </div>
+                    <div class="allergy-item">
+                        <input type="checkbox" id="allergy-8" name="allergy" value="게">
+                        <label for="allergy-8">게</label>
+                    </div>
+                    <div class="allergy-item">
+                        <input type="checkbox" id="allergy-9" name="allergy" value="새우">
+                        <label for="allergy-9">새우</label>
+                    </div>
+                    <div class="allergy-item">
+                        <input type="checkbox" id="allergy-10" name="allergy" value="돼지고기">
+                        <label for="allergy-10">돼지고기</label>
+                    </div>
+                    <div class="allergy-item">
+                        <input type="checkbox" id="allergy-11" name="allergy" value="복숭아">
+                        <label for="allergy-11">복숭아</label>
+                    </div>
+                    <div class="allergy-item">
+                        <input type="checkbox" id="allergy-12" name="allergy" value="토마토">
+                        <label for="allergy-12">토마토</label>
+                    </div>
+                </div>
             </div>
-
-            <button type="button" onclick="submitAllergyTest()">검사 제출</button>
+            <button type="submit">검사 제출</button>
         </form>
-
-        <div id="result" class="result"></div>
+        <div id="result" class="result" style="display: none;"></div>
     </div>
 
     <script>
-        function submitAllergyTest() {
-            const selectedAllergies = [];
-            document.querySelectorAll('input[name="allergy"]:checked').forEach((checkbox) => {
-                selectedAllergies.push(checkbox.value);
-            });
-
-            const resultDiv = document.getElementById("result");
+        document.getElementById('allergyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const selectedAllergies = Array.from(document.querySelectorAll('input[name="allergy"]:checked'))
+                .map(checkbox => checkbox.value);
+            
+            const resultDiv = document.getElementById('result');
             if (selectedAllergies.length > 0) {
-                resultDiv.innerHTML = `선택한 알레르기 항목: ${selectedAllergies.join(", ")}`;
+                resultDiv.textContent = `선택한 알레르기 항목: ${selectedAllergies.join(", ")}`;
             } else {
-                resultDiv.innerHTML = "선택된 알레르기 항목이 없습니다.";
+                resultDiv.textContent = "선택된 알레르기 항목이 없습니다.";
             }
-        }
+            resultDiv.style.display = 'block';
+        });
     </script>
-
 </body>
 </html>
