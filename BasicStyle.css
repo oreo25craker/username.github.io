@@ -1,112 +1,200 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --background-color: #f4f6f8;
+    --text-color: #2c3e50;
+    --header-height: 70px;
 }
-
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f0fdf4; /* 라이트 크림 배경 */
-    color: #333;
+    font-family: 'Noto Sans KR', sans-serif;
     line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
     margin: 0;
     padding: 0;
 }
-
-.container {
-    width: 80%;
-    margin: 0 auto;
-    padding: 20px;
-}
-
 header {
-    background-color: #a5d6a7; /* 민트색 헤더 */
-    color: #fff;
-    padding: 20px 0;
+    background-color: white;
+    color: var(--primary-color);
+    padding: 1rem;
     text-align: center;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
-
 header h1 {
-    font-size: 2.5rem;
-    margin-left: 10px;
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
 }
-
 .icon {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
+    vertical-align: middle;
+    margin-right: 10px;
 }
-
+nav {
+    background-color: white;
+    padding: 0.5rem;
+    text-align: center;
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 999;
+}
+nav a {
+    color: var(--text-color);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    margin: 0 0.5rem;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+nav a:hover, .user-actions a:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+.container {
+    max-width: 1200px;
+    margin: calc(var(--header-height) * 2 + 20px) auto 2rem;
+    padding: 0 1rem;
+}
+main {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+main:hover {
+    transform: translateY(-5px);
+}
+h2 {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 0.5rem;
+    font-weight: 700;
+}
+footer {
+    background-color: var(--primary-color);
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
 .user-actions {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 1rem;
+    right: 1rem;
 }
-
 .user-actions a {
-    background-color: #ffe0b2; /* 피치색 버튼 */
-    color: #333;
-    padding: 10px 20px;
+    color: var(--primary-color);
     text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    margin-left: 10px;
+    background-color: rgba(52, 152, 219, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    transition: all 0.3s ease;
 }
-
-.user-actions a:hover {
-    background-color: #ffcc80; /* 피치색 호버 효과 */
+.button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
-
+.button:hover {
+    background-color: var(--secondary-color);
+}
+@media (max-width: 768px) {
+    header, nav {
+        position: static;
+    }
+    .container {
+        margin-top: 2rem;
+    }
+    .user-actions {
+        position: static;
+        text-align: center;
+        margin-top: 1rem;
+    }
+}
 nav {
     display: flex;
     justify-content: center;
-    background-color: #81c784; /* 민트색 네비게이션 */
-    padding: 10px 0;
+    margin-top: 70px; /* 고정 헤더 아래에 내비게이션 배치 */
 }
 
 nav a {
-    color: white;
-    text-decoration: none;
+    color: var(--primary-color);
     padding: 10px 20px;
+    text-decoration: none;
+    font-weight: 500;
+    border-radius: 5px;
     margin: 0 10px;
-}
-
-nav a:hover {
-    background-color: #66bb6a; /* 진한 민트 호버 효과 */
     transition: background-color 0.3s ease;
 }
 
-main {
-    margin: 50px 0;
+nav a:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.recipe-container {
+    margin-top: 120px; /* 헤더와 내비게이션을 피하기 위한 여백 */
+    padding: 20px;
     text-align: center;
 }
 
-h2 {
-    color: #4e342e; /* 진한 갈색 부제목 */
-    margin-bottom: 30px;
+.recipe-card {
+    display: inline-block;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin: 10px;
+    padding: 20px;
+    width: 250px;
+    transition: transform 0.3s ease;
 }
 
-p {
-    margin-bottom: 15px;
-    color: #5d4037; /* 본문 짙은 갈색 */
+.recipe-card:hover {
+    transform: translateY(-10px);
+}
+
+.recipe-card img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+.recipe-card h3 {
+    font-size: 1.2rem;
+    margin-top: 10px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.recipe-card p {
+    font-size: 0.9rem;
+    color: #7f8c8d;
 }
 
 footer {
-    background-color: #8d6e63; /* 초콜릿 갈색 푸터 */
+    background-color: var(--primary-color);
     color: white;
+    padding: 20px;
     text-align: center;
-    padding: 10px 0;
-    margin-top: 20px;
-}
-
-footer a {
-    color: #ffcc80; /* 푸터 링크 피치색 */
-    text-decoration: none;
-}
-
-footer a:hover {
-    color: #ffe0b2; /* 밝은 피치색 호버 효과 */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
