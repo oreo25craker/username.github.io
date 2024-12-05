@@ -94,6 +94,24 @@
             border-left: 4px solid #3498db;
             border-radius: 4px;
         }
+
+        .nav-buttons {
+            display: flex; 
+            justify-content: center; 
+            margin-top: 20px; 
+        }
+
+        .nav-button {
+            background-color: #f57c00; 
+            color: white; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            text-decoration: none; 
+        }
+
+        .nav-button:hover {
+             background-color: #d84315; 
+         }
     </style>
 </head>
 <body>
@@ -143,37 +161,44 @@
                     </div>
                     <div class="allergy-item">
                         <input type="checkbox" id="allergy-10" name="allergy" value="돼지고기">
-                        <label for="allergy-10">돼지고기</label>
+                        <label for "allergy-10">돼지고기</label>
                     </div>
-                    <div class="allergy-item">
-                        <input type="checkbox" id="allergy-11" name="allergy" value="복숭아">
-                        <label for="allergy-11">복숭아</label>
-                    </div>
-                    <div class="allergy-item">
-                        <input type="checkbox" id="allergy-12" name="allergy" value="토마토">
-                        <label for="allergy-12">토마토</label>
-                    </div>
-                </div>
-            </div>
-            <button type="submit">검사 제출</button>
-        </form>
-        <div id="result" class="result" style="display: none;"></div>
-    </div>
+                    <div class "allegy-item">
+                        <input type "checkbox" id "allegy-11" name "allegy"value "복숭아"/>
+                        <label for "allegy-11">복숭아</label> 
+                     </div>  
+                     <!-- 나머지 항목들 -->
+                </div>  
+             </div>
 
-    <script>
-        document.getElementById('allergyForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const selectedAllergies = Array.from(document.querySelectorAll('input[name="allergy"]:checked'))
-                .map(checkbox => checkbox.value);
-            
-            const resultDiv = document.getElementById('result');
-            if (selectedAllergies.length > 0) {
-                resultDiv.textContent = `선택한 알레르기 항목: ${selectedAllergies.join(", ")}`;
-            } else {
-                resultDiv.textContent = "선택된 알레르기 항목이 없습니다.";
-            }
-            resultDiv.style.display = 'block';
-        });
-    </script>
-</body>
+             <!-- 홈으로 가는 버튼 추가 -->
+             <div class = "nav-buttons"> 
+                 <a href = "index.html"class = "nav-button">홈으로</a> 
+             </div>
+
+             <!-- 검사 제출 버튼 -->
+             <button type = "submit">검사 제출</button> 
+         </form>
+
+         <!-- 결과 표시 영역 -->
+         <div id = "result"class = "result" style = "display:none;"></div> 
+     </div>
+
+     <!-- 스크립트 -->
+     <script> 
+         document.getElementById('allergyForm').addEventListener('submit', function (e) { 
+             e.preventDefault(); 
+             const selectedAllergies = Array.from(document.querySelectorAll('input[name= " allergy"]:checked')) 
+                 .map(checkbox => checkbox.value); 
+
+             const resultDiv = document.getElementById('result'); 
+             if (selectedAllergies.length > 0) { 
+                 resultDiv.textContent = `선택한 알레르기 항목 : ${selectedAllergies.join(", ")}`; 
+             } else { 
+                 resultDiv.textContent = "선택된 알레르기 항목이 없습니다."; 
+             } 
+             resultDiv.style.display = 'block'; 
+         }); 
+     </script> 
+</body> 
 </html>
