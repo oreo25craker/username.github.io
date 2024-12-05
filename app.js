@@ -7,9 +7,10 @@ app.use(bodyParser.json());
 
 // MySQL 연결 설정
 const db = mysql.createConnection({
-    host: 'localhost:3307',
+    host: 'localhost',
+    port: '3307', // 포트 번호 추가
     user: 'root',
-    password: '123456', // 실제 MySQL 비밀번호 입력
+    password: '123456',
     database: 'recipe_web'
 });
 
