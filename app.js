@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'your_password', // 실제 MySQL 비밀번호 입력
+    password: '', // 실제 MySQL 비밀번호 입력
     database: 'recipe_web'
 });
 
