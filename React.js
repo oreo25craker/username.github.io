@@ -3,10 +3,14 @@ import axios from 'axios';
 
 const RecipeList = () => {
     const [recipes, setRecipes] = useState([]);
-    const [allergies, setAllergies] = useState([]); // 사용자의 알레르기 목록
-    const [selectedAllergies, setSelectedAllergies] = useState([]); // 선택된 알레르기
+    const [allergies, setAllergies] = useState([]);
+    const [selectedAllergies, setSelectedAllergies] = useState([]);
 
     useEffect(() => {
+        // 로컬 스토리지에서 선택한 알레르기 항목을 불러옵니다.
+        const savedAllergies = JSON.parse(localStorage.getItem('selectedAllergies')) || [];
+        setSelectedAllergies(savedAllergies);
+
         // 레시피와 알레르기 데이터를 가져옵니다.
         const fetchData = async () => {
             try {
@@ -28,6 +32,13 @@ const RecipeList = () => {
         } else {
             setSelectedAllergies([...selectedAllergies, allergy]);
         }
+
+        // 선택한 알레르기를 로컬 스토리지에 저장합니다.
+        localStorage.setItem('selectedAllergies', JSON.stringify(
+            selectedAllergies.includes(allergy) 
+                ? selectedAllergies.filter(a => a !== allergy) 
+                : [...selectedAllergies, allergy]
+        ));
     };
 
     // 필터링된 레시피 목록
