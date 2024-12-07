@@ -11,7 +11,7 @@ const db = mysql.createConnection({
     host: 'localhost',
     port: '3306', // MySQL 포트 번호
     user: 'root', // 사용자 이름
-    password: '', // 비밀번호
+    password: '', // 비밀번호 (권장: 환경 변수로 관리)
     database: 'recipe_web' // 사용할 데이터베이스
 });
 
@@ -28,6 +28,7 @@ db.connect((err) => {
 app.post('/saveUser', (req, res) => {
     const { kakao_id, nickname, email, profile_image } = req.body;
 
+    // SQL 쿼리: 사용자 정보 저장 또는 업데이트
     const sql = `
         INSERT INTO users (kakao_id, nickname, email, profile_image)
         VALUES (?, ?, ?, ?)
@@ -40,7 +41,7 @@ app.post('/saveUser', (req, res) => {
             res.status(500).send('사용자 정보 저장 실패');
         } else {
             console.log('사용자 정보 저장 또는 업데이트 성공');
-            res.send('사용자 정보 저장 성공');
+            res.status(200).send('사용자 정보 저장 성공');
         }
     });
 });
@@ -48,6 +49,11 @@ app.post('/saveUser', (req, res) => {
 // 레시피 추가 API
 app.post('/addRecipe', (req, res) => {
     const { user_id, title, description, ingredients, instructions } = req.body;
+
+    // 필수 값 체크
+    if (!user_id || !title || !description || !ingredients || !instructions) {
+        return res.status(400).send('모든 필드가 필수입니다.');
+    }
 
     const sql = `
         INSERT INTO recipes (user_id, title, description, ingredients, instructions)
@@ -57,59 +63,65 @@ app.post('/addRecipe', (req, res) => {
     db.query(sql, [user_id, title, description, ingredients, instructions], (err, result) => {
         if (err) {
             console.error('레시피 추가 실패:', err);
-            res.status(500).send('레시피 추가 실패');
-        } else {
-            console.log('레시피 추가 성공');
-            res.send('레시피 추가 성공');
+            return res.status(500).send('레시피 추가에 실패했습니다.');
         }
+
+        console.log('레시피 추가 성공');
+        res.status(200).send('레시피가 성공적으로 추가되었습니다.');
     });
 });
 
-// 알레르기 정보 저장 API
-app.post('/saveAllergy', (req, res) => {
-    const { userId, allergies } = req.body;  // 사용자 ID와 알레르기 ID 배열
+// 알레르기 정보 추가 API
+app.post('/addAllergy', (req, res) => {
+    const { user_id, allergy_name } = req.body;
 
-    // 알레르기 정보를 저장할 쿼리
-    const query = 'INSERT INTO UserAllergies (user_id, allergy_id) VALUES ?';
-    const values = allergies.map(allergyId => [userId, allergyId]);
+    // 필수 값 체크
+    if (!user_id || !allergy_name) {
+        return res.status(400).send('사용자 ID와 알레르기 이름은 필수입니다.');
+    }
 
-    db.query(query, [values], (err, result) => {
+    const sql = `
+        INSERT INTO allergies (user_id, allergy_name)
+        VALUES (?, ?)
+    `;
+
+    db.query(sql, [user_id, allergy_name], (err, result) => {
         if (err) {
-            console.error('알레르기 정보 저장 실패:', err);
-            return res.status(500).json({ message: '알레르기 정보 저장에 실패했습니다.' });
+            console.error('알레르기 추가 실패:', err);
+            return res.status(500).send('알레르기 추가에 실패했습니다.');
         }
 
-        res.status(200).json({ message: '알레르기 정보가 성공적으로 저장되었습니다.' });
+        console.log('알레르기 추가 성공');
+        res.status(200).send('알레르기가 성공적으로 추가되었습니다.');
     });
 });
 
 // 알레르기 정보 조회 API
 app.get('/getAllergies', (req, res) => {
-    const userId = req.query.userId; // 쿼리 파라미터로 사용자 ID를 받음
+    const userId = req.query.userId;
 
-    const query = `
-        SELECT a.allergy_name
-        FROM Allergies a
-        JOIN UserAllergies ua ON a.allergy_id = ua.allergy_id
-        WHERE ua.user_id = ?
+    const sql = `
+        SELECT allergy_name 
+        FROM allergies
+        WHERE user_id = ?
     `;
 
-    db.query(query, [userId], (err, result) => {
+    db.query(sql, [userId], (err, result) => {
         if (err) {
             console.error('알레르기 정보 조회 실패:', err);
-            return res.status(500).json({ message: '알레르기 정보 조회에 실패했습니다.' });
+            return res.status(500).send('알레르기 정보 조회에 실패했습니다.');
         }
 
         if (result.length === 0) {
-            return res.status(200).json({ message: '알레르기 정보가 없습니다.' });
+            res.status(200).send('알레르기 정보가 없습니다.');
+        } else {
+            res.status(200).json({ allergies: result });
         }
-
-        res.status(200).json({ allergies: result });
     });
 });
 
 // 서버 시작
-const PORT = 3000; // 서버 포트 설정
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`서버가 ${PORT}번 포트에서 실행 중`);
+    console.log(`서버가 ${PORT} 포트에서 실행 중입니다.`);
 });
