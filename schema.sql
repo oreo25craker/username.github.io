@@ -36,5 +36,6 @@ CREATE TABLE UserAllergies (
     allergy_id INT,
     PRIMARY KEY (user_id, allergy_id),
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
-    FOREIGN KEY (allergy_id) REFERENCES Allergies(allergy_id)
+    FOREIGN KEY (allergy_id) REFERENCES Allergies(allergy_id),
+    CONSTRAINT unique_user_allergy UNIQUE (user_id, allergy_id)
 );
