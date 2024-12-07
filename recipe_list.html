@@ -1,111 +1,91 @@
-<!DOCTYPE html> <html lang="ko"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>레시피 목록</title> <link href="BasicStyle.css" rel="stylesheet"> <style> /* 검색창 스타일 */ .search-container { width: 100%; max-width: 600px; margin-bottom: 20px; } #searchInput { text-align: center; width: 100%; padding: 15px; font-size: 1.2rem; border: 2px solid #ccc; border-radius: 8px; box-sizing: border-box; } #searchInput:focus { border-color: #f57c00; outline: none; }
-text
-    header, nav {
-        position: fixed;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-    }
-    
-    header {
-        top: 0;
-    }
-    
-    nav {
-        top: 60px;
-    }
-    
-    main {
-        padding-top: 120px;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        width: 100%;
-        box-sizing: border-box;
-    }
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>레시피 목록</title>
+    <link href="BasicStyle.css" rel="stylesheet">
+    <style>
+        /* 검색창 스타일 */
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
 
-    .recipe-list {
-        width: 80%;
-        max-width: 600px;
-        margin-top: 20px;
-        padding: 10px;
-        background-color: #fff;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-    }
+        #searchInput {
+            text-align: center;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
 
-    .recipe {
-        border-bottom: 1px solid #ddd;
-        padding: 15px 0;
-    }
+        #searchInput:focus {
+            border-color: #f57c00;
+            outline: none;
+        }
 
-    .recipe:last-child {
-        border-bottom: none;
-    }
+        header, nav {
+            position: fixed;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
 
-    .recipe-title {
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: #f57c00;
-        text-decoration: underline;
-    }
+        header {
+            top: 0;
+        }
 
-    #loading {
-        color: #888;
-        font-size: 1.1rem;
-        margin-bottom: 20px;
-    }
+        nav {
+            top: 60px;
+        }
 
-    #error {
-        color: red;
-        font-size: 1.1rem;
-        margin-bottom: 20px;
-    }
+        main {
+            padding-top: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-    .pagination {
-        margin-top: 20px;
-    }
+        .recipe-list {
+            width: 80%;
+            max-width: 600px;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
 
-    .pagination button {
-        background-color: #f57c00;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        margin: 0 5px;
-    }
+        .recipe {
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+        }
 
-    .pagination button:disabled {
-        background-color: #ccc;
-        cursor: not-allowed;
-    }
+        .recipe:last-child {
+            border-bottom: none;
+        }
 
-    .nav-buttons {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
+        .recipe-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
 
-    .nav-button {
-        background-color: #f57c00;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-    }
+        .recipe-description {
+            font-size: 1rem;
+            color: #777;
+        }
 
-    .nav-button:hover {
-        background-color: #d84315;
-    }
-</style>
+    </style>
 
 </head> <body> <header> <img src="img/MainIcon.png" alt="레시피 아이콘" class="icon" loading="lazy"> <h1>레시피 알려주는 웹</h1> </header>
-text
 <nav aria-label="Main Navigation">
     <a href="index.html" aria-label="Home">Home</a>
     <a href="mypage.html" aria-label="About">Mypage</a>
