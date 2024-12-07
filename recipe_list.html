@@ -74,143 +74,51 @@
 
         .recipe-title {
             font-size: 1.5rem;
+            color: #3498db;
             font-weight: bold;
-            color: #333;
         }
 
         .recipe-description {
             font-size: 1rem;
-            color: #777;
+            color: #555;
+            margin-top: 10px;
         }
 
     </style>
+</head>
+<body>
 
-</head> <body> <header> <img src="img/MainIcon.png" alt="레시피 아이콘" class="icon" loading="lazy"> <h1>레시피 알려주는 웹</h1> </header>
-<nav aria-label="Main Navigation">
-    <a href="index.html" aria-label="Home">Home</a>
-    <a href="mypage.html" aria-label="About">Mypage</a>
-    <a href="recipe_list.html" aria-label="레시피 목록">레시피 목록</a>
-    <a href="allergys.html" aria-label="알레르기 검사">알레르기 검사</a>
-</nav>
-<main>
-<!-- 검색창 -->
-<div class="search-container">
-    <input type="text" id="searchInput" placeholder="레시피 제목 검색..." oninput="searchRecipes()" />
-</div>
+    <header>
+        <h1>레시피 목록</h1>
+    </header>
 
-<!-- 난이도별 레시피 목록 페이지로 이동하는 버튼들 -->
-<div class="nav-buttons">
-    <a href="easy_recipes.html" class="nav-button">난이도 하</a>
-    <a href="medium_recipes.html" class="nav-button">난이도 중</a>
-    <a href="hard_recipes.html" class="nav-button">난이도 상</a>
-</div>
+    <nav>
+        <ul style="list-style: none; display: flex; justify-content: center; margin: 0; padding: 10px 0; background-color: #3498db; color: white;">
+            <li><a href="#" style="color: white; text-decoration: none; margin: 0 15px;">홈</a></li>
+            <li><a href="#" style="color: white; text-decoration: none; margin: 0 15px;">레시피</a></li>
+            <li><a href="#" style="color: white; text-decoration: none; margin: 0 15px;">마이페이지</a></li>
+        </ul>
+    </nav>
 
-<div id="loading">레시피를 불러오는 중...</div>
-<div id="error"></div>
-<div class="recipe-list" id="recipe-list">
-    <!-- 레시피 목록이 여기에 표시됩니다 -->
-</div>
-<div class="pagination">
-    <button id="prevButton" onclick="changePage(-1)" disabled>이전 페이지</button>
-    <button id="nextButton" onclick="changePage(1)">다음 페이지</button>
-</div>
+    <main>
+        <!-- 검색창 -->
+        <div class="search-container">
+            <input id="searchInput" type="text" placeholder="레시피를 검색하세요..." />
+        </div>
 
-</main> <script> let currentPage = 1; const itemsPerPage = 10; const totalPages = 10; const apiKeys = ["cbe2a668f4ef4e189a82", "7a08bd38f8004bd8b5b7", "25a15d1b109445e38baf"]; const serviceId = "COOKRCP01"; const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; let allRecipes = [];
-text
-    async function fetchRecipes(page) {
-        const loadingElement = document.getElementById('loading');
-        const errorElement = document.getElementById('error');
-        loadingElement.style.display = 'block';
-        errorElement.textContent = '';
+        <!-- 레시피 목록 -->
+        <div class="recipe-list">
+            <div class="recipe">
+                <div class="recipe-title">레시피 제목 1</div>
+                <div class="recipe-description">레시피 설명이 여기에 표시됩니다.</div>
+            </div>
+            <div class="recipe">
+                <div class="recipe-title">레시피 제목 2</div>
+                <div class="recipe-description">레시피 설명이 여기에 표시됩니다.</div>
+            </div>
+            <!-- 더 많은 레시피 추가 가능 -->
+        </div>
+    </main>
 
-        let success = false;
-
-        for (const apiKey of apiKeys) {
-            try {
-                const startIdx = (page - 1) * itemsPerPage + 1;
-                const endIdx = page * itemsPerPage;
-                const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/${startIdx}/${endIdx}`;
-
-                const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-                const data = await response.text();
-                console.log("API 응답 데이터:", data);
-
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data, "text/xml");
-
-                const rows = xmlDoc.getElementsByTagName("row");
-                const recipes = Array.from(rows).map(row => ({
-                    RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
-                    RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
-                    RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A"
-                }));
-
-                allRecipes = recipes;
-                displayRecipes(recipes);
-                success = true;
-                break;
-            } catch (error) {
-                console.error(`${apiKey} 호출 실패:`, error);
-            }
-        }
-
-        if (!success) {
-            errorElement.textContent = '모든 API 키로 레시피를 불러오는데 실패했습니다.';
-        }
-
-        loadingElement.style.display = 'none';
-    }
-
-    function displayRecipes(recipes) {
-        const recipeList = document.getElementById('recipe-list');
-        recipeList.innerHTML = '';
-
-        if (!recipes || recipes.length === 0) {
-            recipeList.innerHTML = '<p>등록된 레시피가 없습니다.</p>';
-            return;
-        }
-
-        recipes.forEach(recipe => {
-            const recipeDiv = document.createElement('div');
-            recipeDiv.classList.add('recipe');
-
-            recipeDiv.innerHTML = `
-                <div><strong>일련번호:</strong> ${recipe.RCP_SEQ}</div>
-                <div class="recipe-title">
-                    <a href="recipe_detail.html?RCP_SEQ=${recipe.RCP_SEQ}">
-                        <strong>메뉴명:</strong> ${recipe.RCP_NM}
-                    </a>
-                </div>
-                <div><strong>조리방법:</strong> ${recipe.RCP_WAY2}</div>
-            `;
-
-            recipeList.appendChild(recipeDiv);
-        });
-
-        updatePaginationButtons();
-    }
-
-    function searchRecipes() {
-        const query = document.getElementById("searchInput").value.toLowerCase();
-        const filteredRecipes = allRecipes.filter(recipe =>
-            recipe.RCP_NM.toLowerCase().includes(query)
-        );
-        displayRecipes(filteredRecipes);
-    }
-
-    function updatePaginationButtons() {
-        document.getElementById('prevButton').disabled = currentPage === 1;
-        document.getElementById('nextButton').disabled = currentPage === totalPages;
-    }
-
-    function changePage(direction) {
-        currentPage += direction;
-        fetchRecipes(currentPage);
-    }
-
-    window.onload = () => fetchRecipes(currentPage);
-</script>
-
-</body> </html>
+</body>
+</html>
