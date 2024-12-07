@@ -127,6 +127,26 @@ app.post('/saveAllergy', (req, res) => {
     });
 });
 
+// 사용자가 저장한 알레르기 정보 조회 API
+app.get('/getAllergies', (req, res) => {
+    const userId = req.query.userId; // 쿼리 파라미터로 사용자 ID를 받는다.
+
+    const query = `
+        SELECT a.allergy_name 
+        FROM Allergies a
+        JOIN UserAllergies ua ON a.allergy_id = ua.allergy_id
+        WHERE ua.user_id = ?
+    `;
+
+    db.query(query, [userId], (err, result) => {
+        if (err) {
+            console.error('알레르기 정보 조회 실패:', err);
+            return res.status(500).json({ message: '알레르기 정보 조회에 실패했습니다.' });
+        }
+        res.status(200).json({ allergies: result });
+    });
+});
+
 app.listen(3000, () => {
     console.log('서버가 3000 포트에서 실행 중입니다.');
 });
