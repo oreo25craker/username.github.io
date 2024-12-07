@@ -29,20 +29,6 @@
             height: 100px;
         }
 
-        #allergy-list {
-            margin-top: 20px;
-        }
-
-        #allergy-list ul {
-            list-style-type: none;
-        }
-
-        #allergy-list li {
-            background-color: #f5f5f5;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-        }
     </style>
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
     <script>
@@ -58,14 +44,18 @@
                     // 사용자 정보 출력
                     document.getElementById('user-name').textContent = res.kakao_account.profile.nickname;
                     document.getElementById('user-email').textContent = res.kakao_account.email;
-                    document.getElementById('user-join-date').textContent = new Date().toISOString().split('T')[0]; // 가입일
-                    // 사용자의 알레르기 정보 가져오기 (예시 API 호출)
-                    fetchAllergies(res.id); // 카카오 ID를 사용하여 알레르기 정보 가져오기
+                    document.getElementById('user-join-date').textContent = new Date().toISOString().split('T')[0]; // 예시 가입일
+                    document.getElementById('user-phone').textContent = "전화번호 미제공"; // 전화번호 제공 시 API에서 수정 가능
+                    document.getElementById('user-address').textContent = "주소 미제공"; // 주소 정보 제공 시 수정 가능
+                    document.getElementById('profile-image').src = res.kakao_account.profile.profile_image_url;
+                },
+                fail: function(err) {
+                    console.error('사용자 정보 요청 실패:', err);
                 }
             });
         }
 
-        // 사용자의 알레르기 정보를 서버에서 가져오기
+         // 사용자의 알레르기 정보를 서버에서 가져오기
         function fetchAllergies(userId) {
             fetch(`/getAllergies?userId=${userId}`)
                 .then(response => response.json())
@@ -95,22 +85,51 @@
         window.onload = function() {
             getUserInfo();
         }
+
+        // 로그아웃 함수
+        function logout() {
+            Kakao.Auth.logout(function() {
+                console.log('로그아웃 성공');
+                alert('로그아웃 성공!');
+                window.location.href = 'index.html'; // 로그아웃 후 메인 페이지로 이동
+            });
+        }
+
+        // 페이지 로드 시 사용자 정보 가져오기
+        window.onload = function() {
+            getUserInfo();
+        };
     </script>
 </head>
 <body>
-    <div>
+
+    <header>
         <h1>마이페이지</h1>
-        <div>
-            <img id="profile-img" src="profile_image_url" alt="Profile Image">
-            <h2 id="user-name"></h2>
-            <p id="user-email"></p>
-            <p id="user-join-date"></p>
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="recipe_list.html">레시피 목록</a>
+        <a href="allergys.html">내 알레르기</a>
+    </nav>
+
+    <div class="container">
+        <div class="profile">
+            <img id="profile-image" src="profile.jpg" alt="프로필 사진">
+            <h2>사용자 정보</h2>
+            <p>이름: <span id="user-name">홍길동</span></p>
+            <p>이메일: <span id="user-email">hong@example.com</span></p>
+            <p>가입일: <span id="user-join-date">2024-01-01</span></p>
+            <p>전화번호: <span id="user-phone">010-1234-5678</span></p>
+            <p>주소: <span id="user-address">서울특별시 예시구 예시동 123-45</span></p>
+            <p><div id="allergy-list">로딩 중...</div></p>
+            <a href="#" class="logout-btn" onclick="logout()">로그아웃</a>
         </div>
-
-        <h3>내 알레르기 정보</h3>
-        <div id="allergy-list">로딩 중...</div>
-
-        <a href="/logout" class="logout-btn">로그아웃</a>
     </div>
+
+    <footer>
+        <p>&copy; 2024 레시피 알려주는 웹</p>
+    </footer>
+
 </body>
 </html>
