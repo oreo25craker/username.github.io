@@ -7,6 +7,7 @@
     --footer-height: 60px;
     --button-color: #3498db;
     --button-hover-color: #2980b9;
+    --button-text-color: white;
 }
 
 body {
@@ -73,67 +74,68 @@ nav a:hover {
 }
 
 main {
+    margin-top: calc(var(--header-height) + 1rem);
     padding: 2rem;
-    margin-top: var(--header-height);
+    text-align: center;
 }
 
-.container {
+footer {
     background-color: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-}
-
-.container h2 {
-    color: var(--primary-color);
-    font-size: 1.75rem;
-    margin-bottom: 20px;
-}
-
-.allergy-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.allergy-form label {
-    font-weight: 600;
-    color: var(--text-color);
-}
-
-.allergy-form input[type="checkbox"] {
-    margin-right: 10px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: var(--footer-height);
 }
 
 button {
     background-color: var(--button-color);
-    color: white;
-    padding: 1rem;
+    color: var(--button-text-color);
     border: none;
-    border-radius: 25px;
+    padding: 0.8rem 1.5rem;
     font-size: 1rem;
+    border-radius: 25px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 100%;
 }
 
 button:hover {
     background-color: var(--button-hover-color);
 }
 
-footer {
-    background-color: var(--primary-color);
-    color: white;
+.card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin: 1rem 0;
     padding: 1rem;
-    text-align: center;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 998;
+    text-align: left;
 }
 
-footer p {
-    margin: 0;
-    font-size: 0.875rem;
+.card h2 {
+    margin-top: 0;
+    font-size: 1.25rem;
+    color: var(--primary-color);
+}
+
+.card p {
+    font-size: 1rem;
+    color: var(--text-color);
+}
+
+.card img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
 }
