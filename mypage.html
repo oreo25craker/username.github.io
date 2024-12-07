@@ -28,7 +28,6 @@
             width: 100px;
             height: 100px;
         }
-
     </style>
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
     <script>
@@ -41,30 +40,44 @@
                 url: '/v2/user/me',
                 success: function(res) {
                     console.log('사용자 정보:', res);
+
                     // 사용자 정보 출력
                     document.getElementById('user-name').textContent = res.kakao_account.profile.nickname;
                     document.getElementById('user-email').textContent = res.kakao_account.email;
-                    document.getElementById('user-join-date').textContent = new Date().toISOString().split('T')[0]; // 예시 가입일
-                    document.getElementById('user-phone').textContent = "전화번호 미제공"; // 전화번호 제공 시 API에서 수정 가능
-                    document.getElementById('user-address').textContent = "주소 미제공"; // 주소 정보 제공 시 수정 가능
-                    document.getElementById('profile-image').src = res.kakao_account.profile.profile_image_url;
+                    document.getElementById('user-join-date').textContent = new Date().toISOString().slice(0, 10); // 가입일 예시
+
+                    // 카카오 사용자 ID를 기반으로 서버에서 알레르기 정보 요청
+                    const userId = res.id; // 카카오 사용자 ID 사용
+                    fetch(`/api/getAllergies?userId=${userId}`)
+                        .then(response => response.json())
+                        .then(allergies => {
+                            displayAllergies(allergies);
+                        })
+                        .catch(error => console.error('알레르기 정보 가져오기 실패:', error));
                 },
-                fail: function(err) {
-                    console.error('사용자 정보 요청 실패:', err);
+                fail: function(error) {
+                    console.error(error);
                 }
             });
         }
 
-        // 로그아웃 함수
-        function logout() {
-            Kakao.Auth.logout(function() {
-                console.log('로그아웃 성공');
-                alert('로그아웃 성공!');
-                window.location.href = 'index.html'; // 로그아웃 후 메인 페이지로 이동
-            });
+        // 알레르기 정보를 화면에 표시
+        function displayAllergies(allergies) {
+            const allergyList = document.getElementById('allergy-list');
+            allergyList.innerHTML = ''; // 기존 목록 초기화
+
+            if (allergies.length === 0) {
+                allergyList.innerHTML = '<li>등록된 알레르기가 없습니다.</li>';
+            } else {
+                allergies.forEach(allergy => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = allergy.allergy_name;
+                    allergyList.appendChild(listItem);
+                });
+            }
         }
 
-        // 페이지 로드 시 사용자 정보 가져오기
+        // 페이지 로드 후 사용자 정보와 알레르기 정보 가져오기
         window.onload = function() {
             getUserInfo();
         };
@@ -85,52 +98,5 @@
     </div>
 
     <a href="#" class="logout-btn" onclick="logout()">로그아웃</a>
-
-    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
-    <script>
-        // Kakao SDK 초기화
-        Kakao.init('d293a2647952f3e6cdd6091fe8f4d575'); // 여기에 Kakao API에서 발급받은 JavaScript 키를 넣으세요
-
-        // 사용자 정보 가져오기
-        function getUserInfo() {
-            Kakao.API.request({
-                url: '/v2/user/me',
-                success: function(res) {
-                    console.log('사용자 정보:', res);
-                    // 사용자 정보 출력
-                    document.getElementById('user-name').textContent = res.kakao_account.profile.nickname;
-                    document.getElementById('user-email').textContent = res.kakao_account.email;
-                    document.getElementById('user-join-date').textContent = new Date().toISOString().split('T')[0];  // 가입일
-
-                    // 프로필 이미지 설정
-                    const profileImg = res.kakao_account.profile.profile_image_url;
-                    document.getElementById('profile-img').src = profileImg;
-
-                    // 알레르기 정보 가져오기 (여기서는 예시로 배열을 사용)
-                    const allergies = ['피넛', '우유', '갑각류']; // 실제로는 서버에서 받아온 알레르기 데이터를 사용
-
-                    // 알레르기 정보를 동적으로 리스트로 추가
-                    const allergyListElement = document.getElementById('allergy-list');
-                    allergies.forEach(allergy => {
-                        const li = document.createElement('li');
-                        li.textContent = allergy;
-                        allergyListElement.appendChild(li);
-                    });
-                }
-            });
-        }
-
-        // 카카오 로그인 후 사용자 정보 가져오기
-        window.onload = function() {
-            getUserInfo(); // 페이지 로드 시 사용자 정보 가져오기
-        };
-
-        // 로그아웃 함수
-        function logout() {
-            Kakao.Auth.logout(function() {
-                alert('로그아웃되었습니다.');
-                window.location.reload(); // 로그아웃 후 페이지 리로드
-            });
-        }
-    </script>
 </body>
+</html>
