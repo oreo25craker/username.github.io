@@ -24,6 +24,22 @@ db.connect((err) => {
     console.log('MySQL 연결 성공');
 });
 
+const allergyItems = [
+    { id: 1, name: '난류' },
+    { id: 2, name: '메밀' },
+    { id: 3, name: '대두' },
+    { id: 4, name: '고등어' },
+    { id: 5, name: '새우' },
+    { id: 6, name: '복숭아' },
+    { id: 7, name: '우유' },
+    { id: 8, name: '땅콩' },
+    { id: 9, name: '밀' },
+    { id: 10, name: '게' },
+    { id: 11, name: '돼지고기' },
+    { id: 12, name: '토마토' }
+];
+
+
 // 사용자 정보 저장 또는 업데이트 API
 app.post('/saveUser', (req, res) => {
     const { kakao_id, nickname, email, profile_image } = req.body;
