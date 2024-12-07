@@ -106,16 +106,24 @@ app.post('/saveAllergy', (req, res) => {
     const userId = req.body.userId;
     const allergies = req.body.allergies; // 알레르기 항목 ID 배열
 
+    // 중복을 방지하기 위해 알레르기 항목 배열에서 유니크한 값만 남기기
+    const uniqueAllergies = [...new Set(allergies)];
+
     // 사용자 알레르기 정보 저장
     const query = 'INSERT INTO UserAllergies (user_id, allergy_id) VALUES ?';
-    const values = allergies.map(allergyId => [userId, allergyId]);
+    const values = uniqueAllergies.map(allergyId => [userId, allergyId]);
 
     db.query(query, [values], (err, result) => {
         if (err) {
             console.error('알레르기 정보 저장 실패:', err);
             return res.status(500).json({ message: '알레르기 정보 저장에 실패했습니다.' });
         }
-        res.status(200).json({ message: '알레르기 정보가 성공적으로 저장되었습니다.' });
+
+        console.log('알레르기 정보 저장 성공:', result);
+        res.status(200).json({
+            message: '알레르기 정보가 성공적으로 저장되었습니다.',
+            allergies: uniqueAllergies // 저장된 알레르기 ID 리스트를 반환
+        });
     });
 });
 
