@@ -28,6 +28,7 @@
             width: 100px;
             height: 100px;
         }
+
     </style>
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
     <script>
@@ -40,63 +41,63 @@
                 url: '/v2/user/me',
                 success: function(res) {
                     console.log('사용자 정보:', res);
-
                     // 사용자 정보 출력
                     document.getElementById('user-name').textContent = res.kakao_account.profile.nickname;
                     document.getElementById('user-email').textContent = res.kakao_account.email;
-                    document.getElementById('user-join-date').textContent = new Date().toISOString().slice(0, 10); // 가입일 예시
-
-                    // 카카오 사용자 ID를 기반으로 서버에서 알레르기 정보 요청
-                    const userId = res.id; // 카카오 사용자 ID 사용
-                    fetch(`/api/getAllergies?userId=${userId}`)
-                        .then(response => response.json())
-                        .then(allergies => {
-                            displayAllergies(allergies);
-                        })
-                        .catch(error => console.error('알레르기 정보 가져오기 실패:', error));
+                    document.getElementById('user-join-date').textContent = new Date().toISOString().split('T')[0]; // 예시 가입일
+                    document.getElementById('user-phone').textContent = "전화번호 미제공"; // 전화번호 제공 시 API에서 수정 가능
+                    document.getElementById('user-address').textContent = "주소 미제공"; // 주소 정보 제공 시 수정 가능
+                    document.getElementById('profile-image').src = res.kakao_account.profile.profile_image_url;
                 },
-                fail: function(error) {
-                    console.error(error);
+                fail: function(err) {
+                    console.error('사용자 정보 요청 실패:', err);
                 }
             });
         }
 
-        // 알레르기 정보를 화면에 표시
-        function displayAllergies(allergies) {
-            const allergyList = document.getElementById('allergy-list');
-            allergyList.innerHTML = ''; // 기존 목록 초기화
-
-            if (allergies.length === 0) {
-                allergyList.innerHTML = '<li>등록된 알레르기가 없습니다.</li>';
-            } else {
-                allergies.forEach(allergy => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = allergy.allergy_name;
-                    allergyList.appendChild(listItem);
-                });
-            }
+        // 로그아웃 함수
+        function logout() {
+            Kakao.Auth.logout(function() {
+                console.log('로그아웃 성공');
+                alert('로그아웃 성공!');
+                window.location.href = 'index.html'; // 로그아웃 후 메인 페이지로 이동
+            });
         }
 
-        // 페이지 로드 후 사용자 정보와 알레르기 정보 가져오기
+        // 페이지 로드 시 사용자 정보 가져오기
         window.onload = function() {
             getUserInfo();
         };
     </script>
 </head>
 <body>
-    <div id="profile">
-        <img id="profile-img" src="" alt="프로필 이미지">
-        <h2 id="user-name">사용자 이름</h2>
-        <p id="user-email">사용자 이메일</p>
-        <p id="user-join-date">가입일</p>
 
-        <!-- 알레르기 정보 추가 -->
-        <h3>알레르기 정보</h3>
-        <ul id="allergy-list">
-            <!-- 여기에 알레르기 정보 목록이 동적으로 추가될 예정 -->
-        </ul>
+    <header>
+        <h1>마이페이지</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="recipe_list.html">레시피 목록</a>
+        <a href="allergys.html">내 알레르기</a>
+    </nav>
+
+    <div class="container">
+        <div class="profile">
+            <img id="profile-image" src="profile.jpg" alt="프로필 사진">
+            <h2>사용자 정보</h2>
+            <p>이름: <span id="user-name">홍길동</span></p>
+            <p>이메일: <span id="user-email">hong@example.com</span></p>
+            <p>가입일: <span id="user-join-date">2024-01-01</span></p>
+            <p>전화번호: <span id="user-phone">010-1234-5678</span></p>
+            <p>주소: <span id="user-address">서울특별시 예시구 예시동 123-45</span></p>
+            <a href="#" class="logout-btn" onclick="logout()">로그아웃</a>
+        </div>
     </div>
 
-    <a href="#" class="logout-btn" onclick="logout()">로그아웃</a>
+    <footer>
+        <p>&copy; 2024 레시피 알려주는 웹</p>
+    </footer>
+
 </body>
 </html>
