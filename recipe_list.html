@@ -120,8 +120,8 @@
             }
     </style>
 </head> 
-<body>
-    <header> <img src="img/MainIcon.png" alt="레시피 아이콘" class="icon" loading="lazy"> <h1>레시피 알려주는 웹</h1> </header>
+<body> 
+<header> <img src="img/MainIcon.png" alt="레시피 아이콘" class="icon" loading="lazy"> <h1>레시피 알려주는 웹</h1> </header>
 <nav aria-label="Main Navigation">
     <a href="index.html" aria-label="Home">Home</a>
     <a href="mypage.html" aria-label="About">Mypage</a>
@@ -143,23 +143,24 @@
 
 <div id="loading">레시피를 불러오는 중...</div>
 <div id="error"></div>
+    
 <div class="recipe-list" id="recipe-list">
     <!-- 레시피 목록이 여기에 표시됩니다 -->
 </div>
+    
 <div class="pagination">
     <button id="prevButton" onclick="changePage(-1)" disabled>이전 페이지</button>
     <button id="nextButton" onclick="changePage(1)">다음 페이지</button>
 </div>
 
 </main> 
-<script> 
-    let currentPage = 1; 
-    const itemsPerPage = 10; 
-    const totalPages = 10; 
-    const apiKeys = ["cbe2a668f4ef4e189a82", "7a08bd38f8004bd8b5b7", "25a15d1b109445e38baf"]; 
-    const serviceId = "COOKRCP01"; const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; 
-    let allRecipes = [];
-    
+    <script> let currentPage = 1; 
+        const itemsPerPage = 10; 
+        const totalPages = 10; 
+        const apiKeys = ["cbe2a668f4ef4e189a82", "7a08bd38f8004bd8b5b7", "25a15d1b109445e38baf"]; 
+        const serviceId = "COOKRCP01"; const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; 
+        let allRecipes = [];
+
     async function fetchRecipes(page) {
         const loadingElement = document.getElementById('loading');
         const errorElement = document.getElementById('error');
