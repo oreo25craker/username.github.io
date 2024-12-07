@@ -44,76 +44,86 @@ const allergyItems = [
 app.post('/saveUser', (req, res) => {
     const { kakao_id, nickname, email, profile_image, allergies } = req.body;
 
-    // 사용자 정보를 저장하거나 업데이트하는 SQL 쿼리
+    // SQL 쿼리: 사용자 정보 저장 또는 업데이트
     const sql = `
         INSERT INTO users (kakao_id, nickname, email, profile_image)
         VALUES (?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE nickname=?, email=?, profile_image=?, allergies=?
+        ON DUPLICATE KEY UPDATE nickname=?, email=?, profile_image=?
     `;
-    
-    // 알레르기 정보를 JSON 문자열로 저장 (알레르기 항목을 배열로 받았다고 가정)
-    const allergyData = JSON.stringify(allergies);
 
-    db.query(sql, [kakao_id, nickname, email, profile_image, nickname, email, profile_image, allergyData], (err, result) => {
+    db.query(sql, [kakao_id, nickname, email, profile_image, nickname, email, profile_image], (err, result) => {
         if (err) {
             console.error('사용자 정보 저장 실패:', err);
-            return res.status(500).send('사용자 정보 저장 실패');
-        }
-        console.log('사용자 정보 저장 또는 업데이트 성공');
-        res.status(200).send('사용자 정보 저장 성공');
-    });
-});
-
-// 레시피 추가 API
-app.post('/addRecipe', (req, res) => {
-    const { user_id, title, description, ingredients, instructions, allergies } = req.body;
-
-    // SQL 쿼리: 레시피 추가
-    const sql = `
-        INSERT INTO recipes (user_id, title, description, ingredients, instructions, allergies)
-        VALUES (?, ?, ?, ?, ?, ?)
-    `;
-    
-    // 알레르기 정보를 JSON 문자열로 저장
-    const allergyData = JSON.stringify(allergies);
-
-    db.query(sql, [user_id, title, description, ingredients, instructions, allergyData], (err, result) => {
-        if (err) {
-            console.error('레시피 추가 실패:', err);
-            return res.status(500).send('레시피 추가 실패');
-        }
-        console.log('레시피 추가 성공');
-        res.status(200).send('레시피 추가 성공');
-    });
-});
-
-// 알레르기 정보 조회 API (사용자가 가진 알레르기 목록 가져오기)
-app.get('/getUserAllergies/:user_id', (req, res) => {
-    const { user_id } = req.params;
-
-    // 사용자 정보에서 알레르기 데이터를 가져오는 SQL 쿼리
-    const sql = `
-        SELECT allergies FROM users WHERE kakao_id = ?
-    `;
-
-    db.query(sql, [user_id], (err, result) => {
-        if (err) {
-            console.error('알레르기 정보 조회 실패:', err);
-            return res.status(500).send('알레르기 정보 조회 실패');
-        }
-
-        if (result.length > 0) {
-            // 알레르기 정보가 존재하면 JSON 문자열을 다시 배열로 변환
-            const allergies = JSON.parse(result[0].allergies);
-            res.status(200).json(allergies);
+            res.status(500).send('사용자 정보 저장 실패');
         } else {
-            res.status(404).send('사용자를 찾을 수 없습니다');
+            console.log('사용자 정보 저장 또는 업데이트 성공');
+
+            // 사용자 ID 가져오기
+            const userId = result.insertId || req.body.user_id;
+
+            // 사용자의 알레르기 항목 저장
+            if (allergies && allergies.length > 0) {
+                // 기존 알레르기 정보 삭제
+                const deleteAllergiesSql = 'DELETE FROM user_allergies WHERE user_id = ?';
+                db.query(deleteAllergiesSql, [userId], (err) => {
+                    if (err) {
+                        console.error('알레르기 삭제 실패:', err);
+                        return res.status(500).send('알레르기 삭제 실패');
+                    }
+
+                    // 새로운 알레르기 항목 추가
+                    const insertAllergiesSql = 'INSERT INTO user_allergies (user_id, allergy_id) VALUES ?';
+                    const allergyValues = allergies.map(allergyId => [userId, allergyId]);
+
+                    db.query(insertAllergiesSql, [allergyValues], (err) => {
+                        if (err) {
+                            console.error('알레르기 항목 추가 실패:', err);
+                            return res.status(500).send('알레르기 항목 추가 실패');
+                        } else {
+                            console.log('알레르기 항목 저장 성공');
+                            res.status(200).send('사용자 정보와 알레르기 정보 저장 성공');
+                        }
+                    });
+                });
+            } else {
+                res.status(200).send('사용자 정보 저장 성공');
+            }
         }
+    });
+});
+
+// 사용자 정보와 알레르기 정보 조회 API
+app.get('/getUserAllergies/:userId', (req, res) => {
+    const userId = req.params.userId;
+
+    // 사용자 정보 조회
+    const userSql = 'SELECT * FROM users WHERE id = ?';
+    db.query(userSql, [userId], (err, userResult) => {
+        if (err || userResult.length === 0) {
+            console.error('사용자 조회 실패:', err);
+            return res.status(404).send('사용자 정보가 없습니다.');
+        }
+
+        // 알레르기 항목 조회
+        const allergiesSql = `
+            SELECT a.name FROM allergies a
+            JOIN user_allergies ua ON a.id = ua.allergy_id
+            WHERE ua.user_id = ?
+        `;
+        db.query(allergiesSql, [userId], (err, allergyResult) => {
+            if (err) {
+                console.error('알레르기 정보 조회 실패:', err);
+                return res.status(500).send('알레르기 정보 조회 실패');
+            }
+            res.status(200).json({
+                user: userResult[0],
+                allergies: allergyResult.map(item => item.name)
+            });
+        });
     });
 });
 
 // 서버 실행
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`서버가 ${PORT}번 포트에서 실행 중입니다.`);
+app.listen(3000, () => {
+    console.log('서버가 3000 포트에서 실행 중입니다.');
 });
