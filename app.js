@@ -71,34 +71,28 @@ app.post('/addRecipe', (req, res) => {
     });
 });
 
-// 사용자 알레르기 정보 저장 API
-app.post('/saveAllergies', async (req, res) => {
-    const { user_id, allergies } = req.body;
+// 알레르기 정보 저장 API
+app.post('/saveAllergies', (req, res) => {
+    const { user_id, allergies } = req.body;  // 클라이언트에서 보낸 user_id와 allergies (알레르기 ID 배열)
 
-    // 알레르기 관계 저장
     const sql = `
         INSERT INTO userAllergies (user_id, allergy_id)
         VALUES (?, ?)
     `;
     
-    try {
-        // 각 알레르기 항목들 삽입 (배열을 반복문을 통해 처리)
-        for (const allergy_id of allergies) {
-            // 중복된 항목을 삽입하지 않도록 처리 (삽입 전 확인할 수 있음)
-            const checkSql = `SELECT * FROM userAllergies WHERE user_id = ? AND allergy_id = ?`;
-            const [existing] = await db.promise().query(checkSql, [user_id, allergy_id]);
-
-            if (existing.length === 0) {
-                await db.promise().query(sql, [user_id, allergy_id]);
+    // 알레르기 항목들 삽입 (배열을 반복문을 통해 처리)
+    allergies.forEach(allergy_id => {
+        db.query(sql, [user_id, allergy_id], (err, result) => {
+            if (err) {
+                console.error('알레르기 정보 저장 실패:', err);
+                return res.status(500).send('알레르기 정보 저장 실패');
             }
-        }
+        });
+    });
 
-        res.status(200).send('알레르기 정보 저장 성공');
-    } catch (err) {
-        console.error('알레르기 정보 저장 실패:', err);
-        res.status(500).send('알레르기 정보 저장 실패');
-    }
+    res.status(200).send('알레르기 정보 저장 성공');
 });
+
 
 // 알레르기 정보 조회 API
 app.get('/getAllergies', (req, res) => {
