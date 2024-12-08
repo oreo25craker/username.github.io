@@ -161,18 +161,38 @@
     </div>
 
     <script>
-        document.getElementById('allergyForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const selectedAllergies = Array.from(document.querySelectorAll('input[name="allergy"]:checked'))
-                .map(checkbox => checkbox.value);
-            
-            const resultDiv = document.getElementById('result');
+        document.getElementById('allergyForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // 폼 제출 방지
+
+            // 선택된 알레르기 항목 가져오기
+            const selectedAllergies = [];
+            const allergyCheckboxes = document.querySelectorAll('input[name="allergy"]:checked');
+            allergyCheckboxes.forEach(function(checkbox) {
+                selectedAllergies.push(checkbox.value);
+            });
+
             if (selectedAllergies.length > 0) {
-                resultDiv.textContent = `선택한 알레르기 항목: ${selectedAllergies.join(", ")}`;
+                console.log('선택된 알레르기 항목:', selectedAllergies);
+                
+                // 서버로 알레르기 정보 전송 (여기서 ajax 또는 fetch 사용)
+                fetch('/saveAllergies', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ allergies: selectedAllergies })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('알레르기 정보가 저장되었습니다.');
+                })
+                .catch(error => {
+                    console.error('알레르기 저장 실패:', error);
+                    alert('알레르기 정보 저장에 실패했습니다.');
+                });
             } else {
-                resultDiv.textContent = "선택된 알레르기 항목이 없습니다.";
+                alert('하나 이상의 알레르기를 선택해 주세요.');
             }
-            resultDiv.style.display = 'block';
         });
     </script>
 </body>
