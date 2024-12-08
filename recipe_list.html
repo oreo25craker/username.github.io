@@ -154,107 +154,128 @@
 </div>
 
 </main> 
-    <script> let currentPage = 1; 
-        const itemsPerPage = 10; 
-        const totalPages = 10; 
-        const apiKeys = ["cbe2a668f4ef4e189a82", "7a08bd38f8004bd8b5b7", "25a15d1b109445e38baf"]; 
-        const serviceId = "COOKRCP01"; const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; 
-        let allRecipes = [];
+    <script> let currentPage = 1;
+const itemsPerPage = 10;
+const totalPages = 10;
+const apiKeys = ["cbe2a668f4ef4e189a82", "7a08bd38f8004bd8b5b7", "25a15d1b109445e38baf"];
+const serviceId = "COOKRCP01";
+const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+let allRecipes = [];
+let selectedAllergies = [];
 
-    async function fetchRecipes(page) {
-        const loadingElement = document.getElementById('loading');
-        const errorElement = document.getElementById('error');
-        loadingElement.style.display = 'block';
-        errorElement.textContent = '';
+function loadAllergies() {
+    const savedAllergies = localStorage.getItem('selectedAllergies');
+    if (savedAllergies) {
+        selectedAllergies = JSON.parse(savedAllergies);
+    }
+}
 
-        let success = false;
+async function fetchRecipes(page) {
+    const loadingElement = document.getElementById('loading');
+    const errorElement = document.getElementById('error');
+    loadingElement.style.display = 'block';
+    errorElement.textContent = '';
 
-        for (const apiKey of apiKeys) {
-            try {
-                const startIdx = (page - 1) * itemsPerPage + 1;
-                const endIdx = page * itemsPerPage;
-                const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/${startIdx}/${endIdx}`;
+    let success = false;
 
-                const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    for (const apiKey of apiKeys) {
+        try {
+            const startIdx = (page - 1) * itemsPerPage + 1;
+            const endIdx = page * itemsPerPage;
+            const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/${startIdx}/${endIdx}`;
 
-                const data = await response.text();
-                console.log("API 응답 데이터:", data);
+            const response = await fetch(apiUrl);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data, "text/xml");
+            const data = await response.text();
+            console.log("API 응답 데이터:", data);
 
-                const rows = xmlDoc.getElementsByTagName("row");
-                const recipes = Array.from(rows).map(row => ({
-                    RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
-                    RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
-                    RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A"
-                }));
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(data, "text/xml");
 
-                allRecipes = recipes;
-                displayRecipes(recipes);
-                success = true;
-                break;
-            } catch (error) {
-                console.error(`${apiKey} 호출 실패:`, error);
-            }
+            const rows = xmlDoc.getElementsByTagName("row");
+            const recipes = Array.from(rows).map(row => ({
+                RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
+                RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
+                RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A"
+            }));
+
+            allRecipes = recipes;
+            displayRecipes(recipes);
+            success = true;
+            break;
+        } catch (error) {
+            console.error(`${apiKey} 호출 실패:`, error);
+        }
+    }
+
+    if (!success) {
+        errorElement.textContent = '모든 API 키로 레시피를 불러오는데 실패했습니다.';
+    }
+
+    loadingElement.style.display = 'none';
+}
+
+function displayRecipes(recipes) {
+    const recipeList = document.getElementById('recipe-list');
+    recipeList.innerHTML = '';
+
+    if (!recipes || recipes.length === 0) {
+        recipeList.innerHTML = '<p>등록된 레시피가 없습니다.</p>';
+        return;
+    }
+
+    recipes.forEach(recipe => {
+        const recipeDiv = document.createElement('div');
+        recipeDiv.classList.add('recipe');
+
+        let title = recipe.RCP_NM;
+        if (hasAllergy(title)) {
+            title += ' 알레르기항목!';
         }
 
-        if (!success) {
-            errorElement.textContent = '모든 API 키로 레시피를 불러오는데 실패했습니다.';
-        }
+        recipeDiv.innerHTML = `
+            <div><strong>일련번호:</strong> ${recipe.RCP_SEQ}</div>
+            <div class="recipe-title">
+                <a href="recipe_detail.html?RCP_SEQ=${recipe.RCP_SEQ}">
+                    <strong>메뉴명:</strong> ${title}
+                </a>
+            </div>
+            <div><strong>조리방법:</strong> ${recipe.RCP_WAY2}</div>
+        `;
 
-        loadingElement.style.display = 'none';
-    }
+        recipeList.appendChild(recipeDiv);
+    });
 
-    function displayRecipes(recipes) {
-        const recipeList = document.getElementById('recipe-list');
-        recipeList.innerHTML = '';
+    updatePaginationButtons();
+}
 
-        if (!recipes || recipes.length === 0) {
-            recipeList.innerHTML = '<p>등록된 레시피가 없습니다.</p>';
-            return;
-        }
+function hasAllergy(title) {
+    return selectedAllergies.some(allergy => title.toLowerCase().includes(allergy.toLowerCase()));
+}
 
-        recipes.forEach(recipe => {
-            const recipeDiv = document.createElement('div');
-            recipeDiv.classList.add('recipe');
+function searchRecipes() {
+    const query = document.getElementById("searchInput").value.toLowerCase();
+    const filteredRecipes = allRecipes.filter(recipe =>
+        recipe.RCP_NM.toLowerCase().includes(query)
+    );
+    displayRecipes(filteredRecipes);
+}
 
-            recipeDiv.innerHTML = `
-                <div><strong>일련번호:</strong> ${recipe.RCP_SEQ}</div>
-                <div class="recipe-title">
-                    <a href="recipe_detail.html?RCP_SEQ=${recipe.RCP_SEQ}">
-                        <strong>메뉴명:</strong> ${recipe.RCP_NM}
-                    </a>
-                </div>
-                <div><strong>조리방법:</strong> ${recipe.RCP_WAY2}</div>
-            `;
+function updatePaginationButtons() {
+    document.getElementById('prevButton').disabled = currentPage === 1;
+    document.getElementById('nextButton').disabled = currentPage === totalPages;
+}
 
-            recipeList.appendChild(recipeDiv);
-        });
+function changePage(direction) {
+    currentPage += direction;
+    fetchRecipes(currentPage);
+}
 
-        updatePaginationButtons();
-    }
-
-    function searchRecipes() {
-        const query = document.getElementById("searchInput").value.toLowerCase();
-        const filteredRecipes = allRecipes.filter(recipe =>
-            recipe.RCP_NM.toLowerCase().includes(query)
-        );
-        displayRecipes(filteredRecipes);
-    }
-
-    function updatePaginationButtons() {
-        document.getElementById('prevButton').disabled = currentPage === 1;
-        document.getElementById('nextButton').disabled = currentPage === totalPages;
-    }
-
-    function changePage(direction) {
-        currentPage += direction;
-        fetchRecipes(currentPage);
-    }
-
-    window.onload = () => fetchRecipes(currentPage);
+window.onload = () => {
+    loadAllergies();
+    fetchRecipes(currentPage);
+};
 </script>
 </body> 
 </html>
