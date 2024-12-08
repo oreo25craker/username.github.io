@@ -19,7 +19,7 @@ const db = mysql.createConnection({
 db.connect((err) => {
     if (err) {
         console.error('MySQL 연결 실패:', err);
-        return;
+        process.exit(1); // 연결 실패 시 프로세스 종료
     }
     console.log('MySQL 연결 성공');
 });
@@ -27,6 +27,11 @@ db.connect((err) => {
 // 사용자 정보 저장 또는 업데이트 API
 app.post('/saveUser', (req, res) => {
     const { kakao_id, nickname, email, profile_image } = req.body;
+
+    // 입력값 검증
+    if (!kakao_id || !nickname) {
+        return res.status(400).send('kakao_id와 nickname은 필수입니다.');
+    }
 
     // SQL 쿼리: 사용자 정보 저장 또는 업데이트
     const sql = `
@@ -38,10 +43,10 @@ app.post('/saveUser', (req, res) => {
     db.query(sql, [kakao_id, nickname, email, profile_image, nickname, email, profile_image], (err, result) => {
         if (err) {
             console.error('사용자 정보 저장 실패:', err);
-            res.status(500).send('사용자 정보 저장 실패');
+            return res.status(500).send('사용자 정보 저장 실패');
         } else {
             console.log('사용자 정보 저장 또는 업데이트 성공');
-            res.status(200).send('사용자 정보 저장 성공');
+            return res.status(200).send('사용자 정보 저장 성공');
         }
     });
 });
@@ -50,11 +55,11 @@ app.post('/saveUser', (req, res) => {
 app.post('/addRecipe', (req, res) => {
     const { user_id, title, description, ingredients, instructions } = req.body;
 
-    // 필수 값 체크
     if (!user_id || !title || !description || !ingredients || !instructions) {
         return res.status(400).send('모든 필드가 필수입니다.');
     }
 
+    // SQL 쿼리: 레시피 추가
     const sql = `
         INSERT INTO recipes (user_id, title, description, ingredients, instructions)
         VALUES (?, ?, ?, ?, ?)
@@ -63,65 +68,16 @@ app.post('/addRecipe', (req, res) => {
     db.query(sql, [user_id, title, description, ingredients, instructions], (err, result) => {
         if (err) {
             console.error('레시피 추가 실패:', err);
-            return res.status(500).send('레시피 추가에 실패했습니다.');
-        }
-
-        console.log('레시피 추가 성공');
-        res.status(200).send('레시피가 성공적으로 추가되었습니다.');
-    });
-});
-
-// 알레르기 정보 추가 API
-app.post('/addAllergy', (req, res) => {
-    const { user_id, allergy_name } = req.body;
-
-    // 필수 값 체크
-    if (!user_id || !allergy_name) {
-        return res.status(400).send('사용자 ID와 알레르기 이름은 필수입니다.');
-    }
-
-    const sql = `
-        INSERT INTO allergies (user_id, allergy_name)
-        VALUES (?, ?)
-    `;
-
-    db.query(sql, [user_id, allergy_name], (err, result) => {
-        if (err) {
-            console.error('알레르기 추가 실패:', err);
-            return res.status(500).send('알레르기 추가에 실패했습니다.');
-        }
-
-        console.log('알레르기 추가 성공');
-        res.status(200).send('알레르기가 성공적으로 추가되었습니다.');
-    });
-});
-
-// 알레르기 정보 조회 API
-app.get('/getAllergies', (req, res) => {
-    const userId = req.query.userId;
-
-    const sql = `
-        SELECT allergy_name 
-        FROM allergies
-        WHERE user_id = ?
-    `;
-
-    db.query(sql, [userId], (err, result) => {
-        if (err) {
-            console.error('알레르기 정보 조회 실패:', err);
-            return res.status(500).send('알레르기 정보 조회에 실패했습니다.');
-        }
-
-        if (result.length === 0) {
-            res.status(200).send('알레르기 정보가 없습니다.');
+            return res.status(500).send('레시피 추가 실패');
         } else {
-            res.status(200).json({ allergies: result });
+            console.log('레시피 추가 성공');
+            return res.status(200).send('레시피 추가 성공');
         }
     });
 });
 
-// 서버 시작
+// 서버 실행
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`서버가 ${PORT} 포트에서 실행 중입니다.`);
+    console.log(`서버가 ${PORT}번 포트에서 실행 중입니다.`);
 });
