@@ -23,7 +23,6 @@ header {
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000;
 }
 header h1 {
     margin: 0;
@@ -45,7 +44,6 @@ nav {
     left: 0;
     right: 0;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    z-index: 999;
 }
 nav a {
     color: var(--text-color);
@@ -66,11 +64,13 @@ nav a:hover, .user-actions a:hover {
     padding: 0 1rem;
 }
 main {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
+    padding-top: calc(var(--header-height) + 50px); /* 내비게이션 바와 겹치지 않도록 상단 여백 추가 */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 main:hover {
     transform: translateY(-5px);
