@@ -25,17 +25,17 @@ CREATE TABLE recipes (
 );
 
 -- 알레르기 테이블
-CREATE TABLE Allergies (
+CREATE TABLE allergies (
     allergy_id INT PRIMARY KEY AUTO_INCREMENT,
     allergy_name VARCHAR(50)
 );
 
 -- 사용자-알레르기 관계 테이블
-CREATE TABLE UserAllergies (
+CREATE TABLE userAllergies (
     user_id INT,
     allergy_id INT,
     PRIMARY KEY (user_id, allergy_id),
-    FOREIGN KEY (user_id) REFERENCES Users(user_id),
-    FOREIGN KEY (allergy_id) REFERENCES Allergies(allergy_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (allergy_id) REFERENCES allergies(allergy_id),
     CONSTRAINT unique_user_allergy UNIQUE (user_id, allergy_id)
 );
