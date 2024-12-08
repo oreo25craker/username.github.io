@@ -161,38 +161,34 @@
     </div>
 
     <script>
+        // 폼 제출 시 서버로 알레르기 정보 전송
         document.getElementById('allergyForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // 폼 제출 방지
+            event.preventDefault(); // 폼 기본 제출 방지
 
             // 선택된 알레르기 항목 가져오기
-            const selectedAllergies = [];
-            const allergyCheckboxes = document.querySelectorAll('input[name="allergy"]:checked');
-            allergyCheckboxes.forEach(function(checkbox) {
-                selectedAllergies.push(checkbox.value);
-            });
+            const selectedAllergies = Array.from(document.querySelectorAll('input[name="allergies"]:checked'))
+                .map(checkbox => checkbox.value);
 
-            if (selectedAllergies.length > 0) {
-                console.log('선택된 알레르기 항목:', selectedAllergies);
-                
-                // 서버로 알레르기 정보 전송 (여기서 ajax 또는 fetch 사용)
-                fetch('/saveAllergies', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ allergies: selectedAllergies })
-                })
-                .then(response => response.json())
-                .then(data => {
+            // 서버로 알레르기 정보 전송
+            fetch('/saveAllergies', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ allergies: selectedAllergies })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
                     alert('알레르기 정보가 저장되었습니다.');
-                })
-                .catch(error => {
-                    console.error('알레르기 저장 실패:', error);
+                } else {
                     alert('알레르기 정보 저장에 실패했습니다.');
-                });
-            } else {
-                alert('하나 이상의 알레르기를 선택해 주세요.');
-            }
+                }
+            })
+            .catch(error => {
+                console.error('알레르기 저장 실패:', error);
+                alert('서버 오류가 발생했습니다.');
+            });
         });
     </script>
 </body>
