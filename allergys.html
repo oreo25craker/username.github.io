@@ -106,51 +106,51 @@
                 <label>알레르기 항목을 선택하세요:</label>
                 <div class="allergy-items">
                     <div class="allergy-item">
-                        <input type="checkbox" id="allergy-1" name="allergy" value="난류">
+                        <input type="checkbox" id="allergy-1" name="allergy" value="1">
                         <label for="allergy-1">난류</label>
                     </div>
                     <div class="allergy-item">
-                        <input type="checkbox" id="allergy-2" name="allergy" value="우유">
+                        <input type="checkbox" id="allergy-2" name="allergy" value="2">
                         <label for="allergy-2">우유</label>
                     </div>
                     <div class="allergy-item">
-                        <input type="checkbox" id="allergy-3" name="allergy" value="메밀">
+                        <input type="checkbox" id="allergy-3" name="allergy" value="3">
                         <label for="allergy-3">메밀</label>
                     </div>
                     <div class="allergy-item">
-                        <input type="checkbox" id="allergy-4" name="allergy" value="땅콩">
+                        <input type="checkbox" id="allergy-4" name="allergy" value="4">
                         <label for="allergy-4">땅콩</label>
                     </div>
                     <div class="allergy-item">
-                        <input type="checkbox" id="allergy-5" name="allergy" value="대두">
+                        <input type="checkbox" id="allergy-5" name="allergy" value="5">
                         <label for="allergy-5">대두</label>
                     </div>
                     <div class="allergy-item">
-                        <input type="checkbox" id="allergy-6" name="allergy" value="밀">
+                        <input type="checkbox" id="allergy-6" name="allergy" value="6">
                         <label for="allergy-6">밀</label>
                     </div>
                     <div class="allergy-item">
-                        <input type="checkbox" id="allergy-7" name="allergy" value="고등어">
+                        <input type="checkbox" id="allergy-7" name="allergy" value="7">
                         <label for="allergy-7">고등어</label>
                     </div>
                     <div class="allergy-item">
-                        <input type="checkbox" id="allergy-8" name="allergy" value="게">
+                        <input type="checkbox" id="allergy-8" name="allergy" value="8">
                         <label for="allergy-8">게</label>
                     </div>
                     <div class="allergy-item">
-                        <input type="checkbox" id="allergy-9" name="allergy" value="새우">
+                        <input type="checkbox" id="allergy-9" name="allergy" value="9">
                         <label for="allergy-9">새우</label>
                     </div>
                     <div class="allergy-item">
-                        <input type="checkbox" id="allergy-10" name="allergy" value="돼지고기">
+                        <input type="checkbox" id="allergy-10" name="allergy" value="10">
                         <label for="allergy-10">돼지고기</label>
                     </div>
                     <div class="allergy-item">
-                        <input type="checkbox" id="allergy-11" name="allergy" value="복숭아">
+                        <input type="checkbox" id="allergy-11" name="allergy" value="11">
                         <label for="allergy-11">복숭아</label>
                     </div>
                     <div class="allergy-item">
-                        <input type="checkbox" id="allergy-12" name="allergy" value="토마토">
+                        <input type="checkbox" id="allergy-12" name="allergy" value="12">
                         <label for="allergy-12">토마토</label>
                     </div>
                 </div>
@@ -161,35 +161,38 @@
     </div>
 
     <script>
-        // 폼 제출 시 서버로 알레르기 정보 전송
-        document.getElementById('allergyForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // 폼 기본 제출 방지
+        document.getElementById('submitAllergies').addEventListener('click', function() {
+    const selectedAllergies = [];
 
-            // 선택된 알레르기 항목 가져오기
-            const selectedAllergies = Array.from(document.querySelectorAll('input[name="allergies"]:checked'))
-                .map(checkbox => checkbox.value);
+    // 체크박스들을 순회하여 체크된 항목의 value 값 저장
+    const allergyCheckboxes = document.querySelectorAll('.allergy-items input[type="checkbox"]:checked');
+    allergyCheckboxes.forEach(checkbox => {
+        selectedAllergies.push(parseInt(checkbox.value));
+    });
 
-            // 서버로 알레르기 정보 전송
-            fetch('/saveAllergies', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ allergies: selectedAllergies })
+    if (selectedAllergies.length > 0) {
+        // 사용자 알레르기 데이터를 서버로 전송
+        fetch('/saveAllergies', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: 1,  // 예시로 user_id를 1로 설정 (로그인된 사용자 정보를 사용)
+                allergies: selectedAllergies
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('알레르기 정보가 저장되었습니다.');
-                } else {
-                    alert('알레르기 정보 저장에 실패했습니다.');
-                }
-            })
-            .catch(error => {
-                console.error('알레르기 저장 실패:', error);
-                alert('서버 오류가 발생했습니다.');
-            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('알레르기 항목이 저장되었습니다:', data);
+        })
+        .catch(error => {
+            console.error('알레르기 항목 저장에 실패했습니다:', error);
         });
+    } else {
+        alert('하나 이상의 알레르기 항목을 선택해주세요.');
+    }
+});
     </script>
 </body>
 </html>
