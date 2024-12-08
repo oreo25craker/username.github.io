@@ -71,29 +71,37 @@ app.post('/addRecipe', (req, res) => {
     });
 });
 
-// 알레르기 정보 추가 API
-app.post('/addAllergy', (req, res) => {
-    const { user_id, allergy_name } = req.body;
+// 알레르기 정보 저장 API
+app.post('/saveAllergies', (req, res) => {
+    const { allergies } = req.body;
+    const userId = 1;  // 예시로 사용자의 ID가 1이라고 가정
 
-    // 필수 값 체크
-    if (!user_id || !allergy_name) {
-        return res.status(400).send('사용자 ID와 알레르기 이름은 필수입니다.');
+    if (!allergies || allergies.length === 0) {
+        return res.status(400).json({ success: false, message: '알레르기 항목을 선택해주세요.' });
     }
 
-    const sql = `
-        INSERT INTO allergies (user_id, allergy_name)
-        VALUES (?, ?)
-    `;
-
-    db.query(sql, [user_id, allergy_name], (err, result) => {
-        if (err) {
-            console.error('알레르기 추가 실패:', err);
-            return res.status(500).send('알레르기 추가에 실패했습니다.');
-        }
-
-        console.log('알레르기 추가 성공');
-        res.status(200).send('알레르기가 성공적으로 추가되었습니다.');
+    // 사용자가 선택한 알레르기를 userAllergies 테이블에 저장
+    const allergyPromises = allergies.map(allergyId => {
+        return new Promise((resolve, reject) => {
+            const sql = 'INSERT INTO userAllergies (user_id, allergy_id) VALUES (?, ?)';
+            db.query(sql, [userId, allergyId], (err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
     });
+
+    Promise.all(allergyPromises)
+        .then(() => {
+            res.status(200).json({ success: true, message: '알레르기 정보 저장 성공' });
+        })
+        .catch(err => {
+            console.error('알레르기 저장 오류:', err);
+            res.status(500).json({ success: false, message: '알레르기 저장에 실패했습니다.' });
+        });
 });
 
 // 알레르기 정보 조회 API
