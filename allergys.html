@@ -161,59 +161,36 @@
     </div>
 
     <script>
-        document.getElementById('submitAllergies').addEventListener('click', function() {
-    const selectedAllergies = [];
+        // 폼 제출 처리
+        document.getElementById('allergy-form').addEventListener('submit', function(e) {
+            e.preventDefault(); // 폼 기본 제출 방지
 
-    // 체크박스들을 순회하여 체크된 항목의 value 값 저장
-    const allergyCheckboxes = document.querySelectorAll('.allergy-items input[type="checkbox"]:checked');
-    allergyCheckboxes.forEach(checkbox => {
-        selectedAllergies.push(parseInt(checkbox.value));
-    });
+            // 선택된 알레르기 항목 가져오기
+            const selectedAllergies = [];
+            const allergyCheckboxes = document.querySelectorAll('input[name="allergy"]:checked');
+            allergyCheckboxes.forEach(function(checkbox) {
+                selectedAllergies.push(checkbox.value);
+            });
 
-    if (selectedAllergies.length > 0) {
-        // 사용자 알레르기 데이터를 서버로 전송
-        fetch('/saveAllergies', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                user_id: 1,  // 예시로 user_id를 1로 설정 (로그인된 사용자 정보를 사용)
-                allergies: selectedAllergies
+            // 서버로 알레르기 항목 전송
+            fetch('/saveAllergies', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: 1,  // 예시로 user_id를 1로 설정 (로그인된 사용자 정보를 사용)
+                    allergies: selectedAllergies
+                })
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('알레르기 항목이 저장되었습니다:', data);
-        })
-        .catch(error => {
-            console.error('알레르기 항목 저장에 실패했습니다:', error);
+            .then(response => response.json())
+            .then(data => {
+                console.log('알레르기 항목이 저장되었습니다:', data);
+            })
+            .catch(error => {
+                console.error('알레르기 항목 저장에 실패했습니다:', error);
+            });
         });
-    } else {
-        alert('하나 이상의 알레르기 항목을 선택해주세요.');
-    }
-});
-        // 알레르기 정보 저장 API
-app.post('/saveAllergies', (req, res) => {
-    const { user_id, allergies } = req.body;  // 클라이언트에서 보낸 user_id와 allergies (알레르기 ID 배열)
-
-    const sql = `
-        INSERT INTO userAllergies (user_id, allergy_id)
-        VALUES (?, ?)
-    `;
-    
-    // 알레르기 항목들 삽입 (배열을 반복문을 통해 처리)
-    allergies.forEach(allergy_id => {
-        db.query(sql, [user_id, allergy_id], (err, result) => {
-            if (err) {
-                console.error('알레르기 정보 저장 실패:', err);
-                return res.status(500).send('알레르기 정보 저장 실패');
-            }
-        });
-    });
-
-    res.status(200).send('알레르기 정보 저장 성공');
-});
     </script>
 </body>
 </html>
