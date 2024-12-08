@@ -94,6 +94,7 @@ app.post('/saveAllergies', (req, res) => {
     res.status(200).send('알레르기 정보 저장 성공');
 });
 
+
 // 알레르기 정보 조회 API
 app.get('/getAllergies', (req, res) => {
     const userId = req.query.userId;
