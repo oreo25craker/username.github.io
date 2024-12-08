@@ -71,29 +71,33 @@ app.post('/addRecipe', (req, res) => {
     });
 });
 
-// 알레르기 정보 저장 API
+// 사용자 알레르기 정보 저장 API
 app.post('/saveAllergies', (req, res) => {
     const { user_id, allergies } = req.body;
+    console.log(`Received allergies for user_id ${user_id}:`, allergies); // 로그 추가
 
-    // 알레르기 관계 저장
-    const sql = `
-        INSERT INTO userAllergies (user_id, allergy_id)
-        VALUES (?, ?)
-    `;
-    
-    // 알레르기 항목들 삽입 (배열을 반복문을 통해 처리)
+    const sql = `INSERT INTO userAllergies (user_id, allergy_id) VALUES (?, ?)`;
+
+    let count = 0;  // 쿼리 실행 횟수 카운트
+
     allergies.forEach(allergy_id => {
         db.query(sql, [user_id, allergy_id], (err, result) => {
             if (err) {
-                console.error('알레르기 정보 저장 실패:', err);
+                console.error('Error saving allergy:', err);
                 return res.status(500).send('알레르기 정보 저장 실패');
+            }
+
+            count++;
+            console.log(`알레르기 ${allergy_id} 저장 성공`);
+
+            // 모든 쿼리 완료 후에 응답
+            if (count === allergies.length) {
+                console.log('모든 알레르기 항목 저장 완료');
+                res.status(200).send('알레르기 정보 저장 성공');
             }
         });
     });
-
-    res.status(200).send('알레르기 정보 저장 성공');
 });
-
 
 // 알레르기 정보 조회 API
 app.get('/getAllergies', (req, res) => {
