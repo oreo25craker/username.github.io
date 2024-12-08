@@ -161,36 +161,41 @@
     </div>
 
     <script>
-        // 폼 제출 처리
-        document.getElementById('allergy-form').addEventListener('submit', function(e) {
-            e.preventDefault(); // 폼 기본 제출 방지
+        document.getElementById('submit-button').addEventListener('click', function(event) {
+    event.preventDefault();  // 기본 폼 제출 방지
 
-            // 선택된 알레르기 항목 가져오기
-            const selectedAllergies = [];
-            const allergyCheckboxes = document.querySelectorAll('input[name="allergy"]:checked');
-            allergyCheckboxes.forEach(function(checkbox) {
-                selectedAllergies.push(checkbox.value);
-            });
+    // 선택된 알레르기 항목을 배열로 가져옵니다.
+    const selectedAllergies = [];
+    document.querySelectorAll('.allergy-checkbox:checked').forEach((checkbox) => {
+        selectedAllergies.push(checkbox.value);  // 체크된 알레르기 항목 값 저장
+    });
 
-            // 서버로 알레르기 항목 전송
-            fetch('/saveAllergies', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    user_id: 1,  // 예시로 user_id를 1로 설정 (로그인된 사용자 정보를 사용)
-                    allergies: selectedAllergies
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('알레르기 항목이 저장되었습니다:', data);
-            })
-            .catch(error => {
-                console.error('알레르기 항목 저장에 실패했습니다:', error);
-            });
-        });
+    if (selectedAllergies.length === 0) {
+        alert("하나 이상의 알레르기를 선택해주세요.");
+        return;
+    }
+
+    // 서버로 알레르기 정보 전송
+    fetch('/saveAllergies', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            user_id: 1,  // 예시로 user_id를 1로 설정 (로그인된 사용자 정보 사용)
+            allergies: selectedAllergies
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('알레르기 항목이 저장되었습니다:', data);
+        alert('알레르기 정보가 저장되었습니다!');
+    })
+    .catch(error => {
+        console.error('알레르기 항목 저장에 실패했습니다:', error);
+        alert('알레르기 정보 저장에 실패했습니다.');
+    });
+});
     </script>
 </body>
 </html>
