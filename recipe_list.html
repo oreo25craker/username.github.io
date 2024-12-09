@@ -154,59 +154,80 @@
 </div>
 
 </main> 
-    <script> let currentPage = 1; 
-        const itemsPerPage = 10; 
-        const totalPages = 10; 
-        const apiKeys = ["cbe2a668f4ef4e189a82", "7a08bd38f8004bd8b5b7", "25a15d1b109445e38baf"]; 
-        const serviceId = "COOKRCP01"; const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; 
-        let allRecipes = [];
+    <script> 
+        let currentPage = 1;
+const itemsPerPage = 10;
+const apiKeys = ["cbe2a668f4ef4e189a82", "7a08bd38f8004bd8b5b7", "25a15d1b109445e38baf"];
+const serviceId = "COOKRCP01";
+const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+let allRecipes = [];
 
-    async function fetchRecipes(page) {
-        const loadingElement = document.getElementById('loading');
-        const errorElement = document.getElementById('error');
-        loadingElement.style.display = 'block';
-        errorElement.textContent = '';
+async function fetchRecipes(page) {
+    const loadingElement = document.getElementById('loading');
+    const errorElement = document.getElementById('error');
+    const recipeListElement = document.getElementById('recipe-list');
+    
+    loadingElement.style.display = 'block';
+    errorElement.textContent = '';  // 오류 메시지 초기화
+    recipeListElement.innerHTML = '';  // 레시피 목록 초기화
 
-        let success = false;
+    let success = false;
 
-        for (const apiKey of apiKeys) {
-            try {
-                const startIdx = (page - 1) * itemsPerPage + 1;
-                const endIdx = page * itemsPerPage;
-                const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/${startIdx}/${endIdx}`;
+    // API 키를 순차적으로 시도
+    for (const apiKey of apiKeys) {
+        try {
+            const startIdx = (page - 1) * itemsPerPage + 1;
+            const endIdx = page * itemsPerPage;
+            const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/${startIdx}/${endIdx}`;
+            
+            const response = await fetch(apiUrl);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const data = await response.text();
+            console.log("API 응답 데이터:", data);  // 응답 데이터를 로그에 출력하여 확인
 
-                const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(data, "text/xml");
 
-                const data = await response.text();
-                console.log("API 응답 데이터:", data);
-
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data, "text/xml");
-
-                const rows = xmlDoc.getElementsByTagName("row");
-                const recipes = Array.from(rows).map(row => ({
-                    RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
-                    RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
-                    RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A"
-                }));
-
-                allRecipes = recipes;
-                displayRecipes(recipes);
-                success = true;
+            const rows = xmlDoc.getElementsByTagName("row");
+            if (rows.length === 0) {
+                // 레시피가 없을 경우
+                errorElement.textContent = '등록된 레시피가 없습니다.';
                 break;
-            } catch (error) {
-                console.error(`${apiKey} 호출 실패:`, error);
             }
-        }
 
-        if (!success) {
-            errorElement.textContent = '모든 API 키로 레시피를 불러오는데 실패했습니다.';
-        }
+            // 레시피 목록 파싱
+            allRecipes = Array.from(rows).map(row => ({
+                RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
+                RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
+                RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A"
+            }));
 
-        loadingElement.style.display = 'none';
+            // 레시피 목록이 있으면 표시
+            allRecipes.forEach(recipe => {
+                const recipeItem = document.createElement('div');
+                recipeItem.classList.add('recipe');
+                recipeItem.innerHTML = `
+                    <h3>${recipe.RCP_NM}</h3>
+                    <p>방법: ${recipe.RCP_WAY2}</p>
+                `;
+                recipeListElement.appendChild(recipeItem);
+            });
+
+            success = true;
+            break;  // API 호출 성공 시 반복문 종료
+        } catch (error) {
+            console.error("API 호출 오류:", error);
+            errorElement.textContent = '레시피 정보를 불러오는 데 실패했습니다.';
+        }
     }
 
+    if (!success) {
+        errorElement.textContent = '모든 API에서 데이터를 가져오는 데 실패했습니다.';
+    }
+
+    loadingElement.style.display = 'none';  // 로딩 표시 숨기기
+}
     function displayRecipes(recipes) {
         const recipeList = document.getElementById('recipe-list');
         recipeList.innerHTML = '';
