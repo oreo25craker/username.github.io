@@ -3,279 +3,152 @@
 <head> 
     <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <title>레시피 목록</title> <link href="BasicStyle.css" rel="stylesheet"> 
-    <style> 
-            /* 검색창 스타일 */ 
-            .search-container 
-            { width: 100%; max-width: 600px; margin-bottom: 20px; } 
-            #searchInput { text-align: center; width: 100%; padding: 15px; 
-                          font-size: 1.2rem; border: 2px solid #ccc; border-radius: 8px; box-sizing: border-box; 
-                         } 
-            #searchInput:focus { 
-                border-color: #f57c00; outline: none; 
-            }
-            
+    <title>레시피 목록</title>
+    <link href="BasicStyle.css" rel="stylesheet">
+    <style>
+        .recipe-list {
+            width: 80%;
+            max-width: 600px;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
 
-            header, nav {
-                position: fixed;
-                left: 0;
-                right: 0;
-                z-index: 1000;
-            }
-    
-            header {
-                top: 0;
-            }
-    
-            nav {
-                top: 60px;
-            }
-    
-            main {
-                padding-top: 120px;
-                display: flex;
-                flex-direction: column;
-                justify-content: flex-start;
-                align-items: center;
-                width: 100%;
-                box-sizing: border-box;
-            }
+        .recipe {
+            border-bottom: 1px solid #ddd;
+            padding: 15px;
+        }
 
-            .recipe-list {
-                width: 80%;
-                max-width: 600px;
-                margin-top: 20px;
-                padding: 10px;
-                background-color: #fff;
-                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-                border-radius: 10px;
-            }
+        .recipe h3 {
+            font-size: 1.5rem;
+            color: #333;
+        }
 
-            .recipe {
-                border-bottom: 1px solid #ddd;
-                padding: 15px 0;
-            }
+        .recipe p {
+            color: #666;
+        }
 
-            .recipe:last-child {
-                border-bottom: none;
-            }
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
 
-            .recipe-title {
-                font-size: 1.2rem;
-                font-weight: bold;
-                color: #f57c00;
-                text-decoration: underline;
-            }
-
-            #loading {
-                color: #888;
-                font-size: 1.1rem;
-                margin-bottom: 20px;
-            }
-
-            #error {
-                color: red;
-                font-size: 1.1rem;
-                margin-bottom: 20px;
-            }
-
-            .pagination {
-                margin-top: 20px;
-            }
-
-            .pagination button {
-                background-color: #f57c00;
-                color: white;
-                padding: 10px 20px;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                margin: 0 5px;
-            }
-
-            .pagination button:disabled {
-                background-color: #ccc;
-                cursor: not-allowed;
-            }
-        
-            .nav-buttons {
-                display: flex;
-                gap: 10px;
-                margin-bottom: 20px;
-            }
-
-            .nav-button {
-                background-color: #f57c00;
-                color: white;
-                padding: 10px 20px;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                text-decoration: none;
-                display: inline-block;
-            }
-
-            .nav-button:hover {
-                background-color: #d84315;
-            }
+        #searchInput {
+            text-align: center;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        #searchInput:focus {
+            border-color: #f57c00;
+            outline: none;
+        }
     </style>
 </head> 
-<body> 
-<header> <img src="img/MainIcon.png" alt="레시피 아이콘" class="icon" loading="lazy"> <h1>레시피 알려주는 웹</h1> </header>
-<nav aria-label="Main Navigation">
-    <a href="index.html" aria-label="Home">Home</a>
-    <a href="mypage.html" aria-label="About">Mypage</a>
-    <a href="recipe_list.html" aria-label="레시피 목록">레시피 목록</a>
-    <a href="allergys.html" aria-label="알레르기 검사">알레르기 검사</a>
-</nav>
-<main>
-<!-- 검색창 -->
-<div class="search-container">
-    <input type="text" id="searchInput" placeholder="레시피 제목 검색..." oninput="searchRecipes()" />
-</div>
+<body>
 
-<!-- 난이도별 레시피 목록 페이지로 이동하는 버튼들 -->
-<div class="nav-buttons">
-    <a href="easy_recipes.html" class="nav-button">난이도 하</a>
-    <a href="medium_recipes.html" class="nav-button">난이도 중</a>
-    <a href="hard_recipes.html" class="nav-button">난이도 상</a>
-</div>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="레시피 검색" onkeyup="searchRecipes()">
+    </div>
 
-<div id="loading">레시피를 불러오는 중...</div>
-<div id="error"></div>
-    
-<div class="recipe-list" id="recipe-list">
-    <!-- 레시피 목록이 여기에 표시됩니다 -->
-</div>
-    
-<div class="pagination">
-    <button id="prevButton" onclick="changePage(-1)" disabled>이전 페이지</button>
-    <button id="nextButton" onclick="changePage(1)">다음 페이지</button>
-</div>
+    <div id="recipeContainer" class="recipe-list">
+        <!-- 레시피 항목이 여기에 동적으로 추가됩니다. -->
+    </div>
 
-</main> 
-    <script> 
+    <script>
+        const apiKeys = ["cbe2a668f4ef4e189a82", "7a08bd38f8004bd8b5b7", "25a15d1b109445e38baf"];
+        const serviceId = "COOKRCP01";
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+        const itemsPerPage = 10;
         let currentPage = 1;
-const itemsPerPage = 10;
-const apiKeys = ["cbe2a668f4ef4e189a82", "7a08bd38f8004bd8b5b7", "25a15d1b109445e38baf"];
-const serviceId = "COOKRCP01";
-const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-let allRecipes = [];
+        let recipes = [];
 
-async function fetchRecipes(page) {
-    const loadingElement = document.getElementById('loading');
-    const errorElement = document.getElementById('error');
-    const recipeListElement = document.getElementById('recipe-list');
-    
-    loadingElement.style.display = 'block';
-    errorElement.textContent = '';  // 오류 메시지 초기화
-    recipeListElement.innerHTML = '';  // 레시피 목록 초기화
+        // 레시피 데이터 가져오기
+        async function fetchRecipes() {
+            const loadingElement = document.createElement('p');
+            loadingElement.textContent = "로딩 중...";
+            document.getElementById('recipeContainer').appendChild(loadingElement);
 
-    let success = false;
+            let success = false;
 
-    // API 키를 순차적으로 시도
-    for (const apiKey of apiKeys) {
-        try {
-            const startIdx = (page - 1) * itemsPerPage + 1;
-            const endIdx = page * itemsPerPage;
-            const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/${startIdx}/${endIdx}`;
-            
-            const response = await fetch(apiUrl);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
-            const data = await response.text();
-            console.log("API 응답 데이터:", data);  // 응답 데이터를 로그에 출력하여 확인
+            for (const apiKey of apiKeys) {
+                try {
+                    const startIdx = (currentPage - 1) * itemsPerPage + 1;
+                    const endIdx = currentPage * itemsPerPage;
+                    const apiUrl = `${proxyUrl}http://openapi.foodsafetykorea.go.kr/api/${apiKey}/${serviceId}/xml/${startIdx}/${endIdx}`;
 
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(data, "text/xml");
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-            const rows = xmlDoc.getElementsByTagName("row");
-            if (rows.length === 0) {
-                // 레시피가 없을 경우
-                errorElement.textContent = '등록된 레시피가 없습니다.';
-                break;
+                    const data = await response.text();
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(data, "text/xml");
+
+                    const rows = xmlDoc.getElementsByTagName("row");
+                    recipes = Array.from(rows).map(row => ({
+                        RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
+                        RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
+                        RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A",
+                    }));
+
+                    success = true;
+                    break;
+                } catch (error) {
+                    console.error("API 요청 오류:", error);
+                }
             }
 
-            // 레시피 목록 파싱
-            allRecipes = Array.from(rows).map(row => ({
-                RCP_SEQ: row.querySelector("RCP_SEQ")?.textContent || "N/A",
-                RCP_NM: row.querySelector("RCP_NM")?.textContent || "N/A",
-                RCP_WAY2: row.querySelector("RCP_WAY2")?.textContent || "N/A"
-            }));
+            if (!success) {
+                document.getElementById('recipeContainer').textContent = '레시피를 불러오는 데 실패했습니다.';
+                return;
+            }
 
-            // 레시피 목록이 있으면 표시
-            allRecipes.forEach(recipe => {
-                const recipeItem = document.createElement('div');
-                recipeItem.classList.add('recipe');
-                recipeItem.innerHTML = `
+            loadingElement.remove(); // 로딩 메시지 제거
+            displayRecipes(); // 레시피 목록 표시
+        }
+
+        // 레시피 목록을 HTML에 표시
+        function displayRecipes() {
+            const recipeContainer = document.getElementById('recipeContainer');
+            recipeContainer.innerHTML = '';
+
+            if (recipes.length === 0) {
+                recipeContainer.innerHTML = '등록된 레시피가 없습니다.';
+                return;
+            }
+
+            recipes.forEach(recipe => {
+                const recipeElement = document.createElement('div');
+                recipeElement.classList.add('recipe');
+                recipeElement.innerHTML = `
                     <h3>${recipe.RCP_NM}</h3>
-                    <p>방법: ${recipe.RCP_WAY2}</p>
+                    <p>${recipe.RCP_WAY2}</p>
+                    <a href="recipe-detail.html?recipeId=${recipe.RCP_SEQ}">상세 보기</a>
                 `;
-                recipeListElement.appendChild(recipeItem);
+                recipeContainer.appendChild(recipeElement);
             });
-
-            success = true;
-            break;  // API 호출 성공 시 반복문 종료
-        } catch (error) {
-            console.error("API 호출 오류:", error);
-            errorElement.textContent = '레시피 정보를 불러오는 데 실패했습니다.';
-        }
-    }
-
-    if (!success) {
-        errorElement.textContent = '모든 API에서 데이터를 가져오는 데 실패했습니다.';
-    }
-
-    loadingElement.style.display = 'none';  // 로딩 표시 숨기기
-}
-    function displayRecipes(recipes) {
-        const recipeList = document.getElementById('recipe-list');
-        recipeList.innerHTML = '';
-
-        if (!recipes || recipes.length === 0) {
-            recipeList.innerHTML = '<p>등록된 레시피가 없습니다.</p>';
-            return;
         }
 
-        recipes.forEach(recipe => {
-            const recipeDiv = document.createElement('div');
-            recipeDiv.classList.add('recipe');
+        // 검색 기능
+        function searchRecipes() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredRecipes = recipes.filter(recipe =>
+                recipe.RCP_NM.toLowerCase().includes(searchTerm) ||
+                recipe.RCP_WAY2.toLowerCase().includes(searchTerm)
+            );
+            recipes = filteredRecipes;
+            displayRecipes(); // 필터링된 레시피 목록 재표시
+        }
 
-            recipeDiv.innerHTML = `
-                <div><strong>일련번호:</strong> ${recipe.RCP_SEQ}</div>
-                <div class="recipe-title">
-                    <a href="recipe_detail.html?RCP_SEQ=${recipe.RCP_SEQ}">
-                        <strong>메뉴명:</strong> ${recipe.RCP_NM}
-                    </a>
-                </div>
-                <div><strong>조리방법:</strong> ${recipe.RCP_WAY2}</div>
-            `;
+        // 페이지 로딩 시 레시피 데이터 가져오기
+        window.onload = fetchRecipes;
+    </script>
 
-            recipeList.appendChild(recipeDiv);
-        });
-
-        updatePaginationButtons();
-    }
-
-    function searchRecipes() {
-        const query = document.getElementById("searchInput").value.toLowerCase();
-        const filteredRecipes = allRecipes.filter(recipe =>
-            recipe.RCP_NM.toLowerCase().includes(query)
-        );
-        displayRecipes(filteredRecipes);
-    }
-
-    function updatePaginationButtons() {
-        document.getElementById('prevButton').disabled = currentPage === 1;
-        document.getElementById('nextButton').disabled = currentPage === totalPages;
-    }
-
-    function changePage(direction) {
-        currentPage += direction;
-        fetchRecipes(currentPage);
-    }
-
-    window.onload = () => fetchRecipes(currentPage);
-</script>
-</body> 
+</body>
 </html>
